@@ -47,9 +47,14 @@
   </div>
 
   <!-- Loading -->
-  <div class="text-center py-20" x-show="!user.id && !loadingFailed">
+  <div class="text-center py-20" x-show="!user.id && !error">
     <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
     <p class="mt-4 text-gray-400">Signing you in...</p>
+  </div>
+
+  <!-- Error (only if real issue) -->
+  <div class="text-center py-20" x-show="error">
+    <p class="text-red-400 text-lg">Login failed. <a href="login.html" class="underline">Try again</a></p>
   </div>
 
   <!-- Stats -->
@@ -94,39 +99,37 @@ function dashboard() {
   return {
     user: { id: '', global_name: '', username: '', email: '', avatar: '' },
     apiKey: '',
-    loadingFailed: false,
+    error: false,
 
     init() {
-      // 1. Try to get token from URL hash (first login)
-      let token = this.extractTokenFromUrl();
+      let token = this.getTokenFromHash();
 
-      // 2. If no token in URL, check localStorage (reload, new tab)
+      // If no hash, try localStorage
       if (!token) {
         token = localStorage.getItem('discord_token');
       }
 
-      // 3. NO TOKEN AT ALL? → Go to login
+      // NO TOKEN? → Go to login
       if (!token) {
         return this.redirectToLogin();
       }
 
-      // 4. SAVE TOKEN FOR FUTURE VISITS
+      // SAVE TOKEN
       localStorage.setItem('discord_token', token);
 
-      // 5. Clean URL immediately
+      // Clean URL
       this.cleanUrl();
 
-      // 6. Fetch user data
+      // Fetch user
       this.fetchUser(token);
     },
 
-    extractTokenFromUrl() {
+    getTokenFromHash() {
       const hash = window.location.hash.substring(1);
       if (!hash) return null;
       const params = new URLSearchParams(hash);
       const token = params.get('access_token');
       if (token) {
-        // Immediately clean hash after reading
         history.replaceState({}, '', '/CapTcha/dashboard.html');
       }
       return token;
@@ -139,11 +142,19 @@ function dashboard() {
     },
 
     fetchUser(token) {
-      fetch('https://discord.com/api/users/@me', {
-        headers: { 'Authorization': `Bearer ${token}` }
+      fetch('https://discord.com/api/v10/users/@me', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       })
-      .then(r => {
-        if (!r.ok) throw new Error('Invalid or expired token');
+      .then(async r => {
+        if (!r.ok) {
+          const text = await r.text();
+          console.error('Discord API Error:', r.status, text);
+          throw new Error(`HTTP ${r.status}`);
+        }
         return r.json();
       })
       .then(data => {
@@ -159,10 +170,11 @@ function dashboard() {
         this.apiKey = 'ct_sk_' + Math.random().toString(36).substr(2, 32);
         this.initChart();
       })
-      .catch(() => {
+      .catch(err => {
+        console.warn('Login failed, clearing token:', err.message);
         localStorage.removeItem('discord_token');
-        this.loadingFailed = true;
-        setTimeout(() => this.redirectToLogin(), 1000);
+        this.error = true;
+        setTimeout(() => this.redirectToLogin(), 2000);
       });
     },
 
