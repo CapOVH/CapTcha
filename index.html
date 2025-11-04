@@ -645,14 +645,22 @@
             ]
         };
 
-        scanBtn.addEventListener('click', () => {
-            const url = urlInput.value.trim();
-            if (!url || !isValidURL(url)) {
-                alert('Please enter a valid URL (including https://)');
-                return;
-            }
-            performScan(url);
-        });
+        scanBtn.addEventListener('click', async () => {
+  const url = urlInput.value.trim();
+  if (!url || !isValidURL(url)) return alert('Valid URL required');
+
+  resultsSection.style.display = 'block';
+  resultsContainer.innerHTML = `<div class="loading"><div class="spinner"></div><p>Scanning...</p></div>`;
+
+  const res = await fetch('/api/scan', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url })
+  });
+  const data = await res.json();
+
+  displayResults(url, data.captchas);
+});
 
         urlInput.addEventListener('keypress', e => e.key === 'Enter' && scanBtn.click());
         clearBtn.addEventListener('click', () => {
