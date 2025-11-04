@@ -109,18 +109,18 @@
 const DISCORD_CLIENT_ID = '963238863256567848';
 const REDIRECT_URI = 'https://capovh.github.io/CapTcha/admin.html';
 const GITHUB_RAW_URL = 'https://raw.githubusercontent.com/capovh/CapTcha/main/keyx.txt';
-const ADMIN_DISCORD_IDS = ['123456789012345678', 'YOUR_DISCORD_ID_HERE']; // Add your ID
+const ADMIN_DISCORD_IDS = ['1393017932610666577', '805954114231205978']; // Add your ID
 
 // Firebase Config
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "captcha-tool.firebaseapp.com",
-  databaseURL: "https://captcha-tool-default-rtdb.firebaseio.com",
-  projectId: "captcha-tool",
-  storageBucket: "captcha-tool.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:abc123"
-};
+      apiKey: "AIzaSyA9sJoZSzbmKJ-7F9jsYVmf7m4cMJ_JUuA",
+      authDomain: "captcha-finder.firebaseapp.com",
+      projectId: "captcha-finder",
+      storageBucket: "captcha-finder.firebasestorage.app",
+      messagingSenderId: "268327722037",
+      appId: "1:268327722037:web:54ba44e1d4ccc2c734e57c",
+      measurementId: "G-LX1WXZFJCW"
+    };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
@@ -159,7 +159,7 @@ function admin() {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({
           client_id: DISCORD_CLIENT_ID,
-          client_secret: 'YOUR_DISCORD_CLIENT_SECRET', // ← GET FROM DISCORD DEV PORTAL
+          client_secret: 'e-AcJZ15inxDOh7tovbhxEqYywfHb4bq', // ← GET FROM DISCORD DEV PORTAL
           grant_type: 'authorization_code',
           code: code,
           redirect_uri: REDIRECT_URI,
