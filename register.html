@@ -63,7 +63,15 @@
   </div>
 
   <script>
-    const firebaseConfig = { /* SAME AS ABOVE */ };
+    const firebaseConfig = {
+      apiKey: "AIzaSyA9sJoZSzbmKJ-7F9jsYVmf7m4cMJ_JUuA",
+      authDomain: "captcha-finder.firebaseapp.com",
+      projectId: "captcha-finder",
+      storageBucket: "captcha-finder.firebasestorage.app",
+      messagingSenderId: "268327722037",
+      appId: "1:268327722037:web:54ba44e1d4ccc2c734e57c",
+      measurementId: "G-LX1WXZFJCW"
+    };
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
@@ -75,7 +83,7 @@
           try {
             await auth.createUserWithEmailAndPassword(this.email, this.password);
             this.success = true;
-            setTimeout(() => window.location.href = 'index.html', 1500);
+            setTimeout(() => window.location.href = 'index.html', 1500);  // ← GOES TO index.html
           } catch (err) {
             this.error = err.code === 'auth/email-already-in-use' ? 'Email already registered.' : 'Registration failed.';
           } finally { this.loading = false; }
