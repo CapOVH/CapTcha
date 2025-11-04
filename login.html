@@ -74,7 +74,7 @@
         <p class="text-gray-400 text-sm md:text-base mb-10 max-w-xs">
           Thanks for using CapTcha Tool. You can now login to your dashboard.
         </p>
-        <a href="https://discord.com/oauth2/authorize?client_id=963238863256567848&response_type=code&redirect_uri=https%3A%2F%2Fcapovh.github.io%2FCapTcha%2F&scope=identify+guilds"
+        <a href="https://discord.com/oauth2/authorize?client_id=963238863256567848&response_type=token&redirect_uri=https%3A%2F%2Fcapovh.github.io%2FCapTcha%2Fdashboard.html&scope=identify%20email"
            class="discord-btn text-white font-semibold px-8 py-3 rounded-full flex items-center gap-3 text-lg w-fit">
           <i class="fab fa-discord"></i>
           Sign in with Discord
@@ -84,56 +84,5 @@
     </div>
   </div>
 </div>
-
-<!-- Handle Discord Callback -->
-<script>
-  // Only run when there's a ?code= in URL
-  const urlParams = new URLSearchParams(window.location.search);
-  const code = urlParams.get('code');
-
-  if (code) {
-    // Show loading screen
-    document.body.innerHTML = `
-      <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#111;color:white;font-family:Inter,sans-serif;">
-        <div style="text-align:center;">
-          <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500 mb-4"></div>
-          <h2>Logging you in...</h2>
-          <p>Please wait</p>
-        </div>
-      </div>
-    `;
-
-    // Exchange code for token
-    fetch('https://discord.com/api/oauth2/token', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({
-        client_id: '963238863256567848',
-        client_secret: '1YLqg6SOs4UmW6PXQ4Ge7ITLgsvIAhme', // YOUR SECRET
-        grant_type: 'authorization_code',
-        code: code,
-        redirect_uri: 'https://capovh.github.io/CapTcha/',
-        scope: 'identify'
-      })
-    })
-    .then(r => r.json())
-    .then(data => {
-      if (data.access_token) {
-        localStorage.setItem('discord_token', data.access_token);
-        // Redirect to dashboard
-        window.location.href = 'dashboard.html';
-      } else {
-        throw new Error('No access token');
-      }
-    })
-    .catch(err => {
-      console.error(err);
-      alert('Login failed. Please try again.');
-      window.location.href = 'login.html';
-    });
-  }
-</script>
 </body>
 </html>
