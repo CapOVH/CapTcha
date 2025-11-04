@@ -8,6 +8,10 @@
   <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <style>
     body { font-family: 'Inter', sans-serif; }
     .glass {
@@ -230,17 +234,32 @@
 <!-- SellAuth Embed -->
 <script src="https://sellauth.com/assets/js/sellauth-embed-2.js"></script>
 <script>
+  // Firebase Configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyA9sJoZSzbmKJ-7F9jsYVmf7m4cMJ_JUuA",
+    authDomain: "captcha-finder.firebaseapp.com",
+    projectId: "captcha-finder",
+    storageBucket: "captcha-finder.firebasestorage.app",
+    messagingSenderId: "268327722037",
+    appId: "1:268327722037:web:54ba44e1d4ccc2c734e57c",
+    measurementId: "G-LX1WXZFJCW"
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+
   function app() {
     return {
       mobileMenu: false,
       dark: localStorage.getItem('dark') === 'true',
       init() {
-        // Check if user is logged in, redirect to dashboard
-        const token = localStorage.getItem('discord_token');
-        if (token) {
-          window.location.replace('dashboard.html');
-          return;
-        }
+        // Check if user is logged in with Firebase, redirect to dashboard
+        auth.onAuthStateChanged(user => {
+          if (user) {
+            window.location.replace('dashboard.html');
+          }
+        });
         
         this.$watch('dark', val => {
           document.documentElement.classList.toggle('dark', val);
