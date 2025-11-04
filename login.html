@@ -8,165 +8,51 @@
   <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  
+
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-  
+
   <style>
-    body { font-family: 'Inter', sans-serif; }
-    .glass-card { 
-      background: rgba(30, 35, 55, 0.65); 
-      backdrop-filter: blur(16px); 
-      border: 1px solid rgba(255, 255, 255, 0.12); 
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4); 
-    }
-    .dark .glass-card {
-      background: rgba(15, 15, 26, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
+    body { font-family: 'Inter', sans-serif; transition: opacity 0.4s ease; }
+    .glass-card { background: rgba(30,35,55,0.65); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.12); }
+    .input-field { background: rgba(15,23,42,0.6); border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s ease; }
+    .input-field:focus { border-color: rgba(99,102,241,0.5); outline: none; box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
     .auth-btn { transition: all 0.3s ease; }
-    .auth-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3); }
-    .bird-svg { animation: float 6s ease-in-out infinite; }
-    @keyframes float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-10px) rotate(2deg); } }
-    .back-btn { transition: all 0.3s ease; }
-    .back-btn:hover { transform: translateX(-5px); }
-    .input-field {
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      transition: all 0.3s ease;
-    }
-    .input-field:focus {
-      background: rgba(15, 23, 42, 0.8);
-      border-color: rgba(99, 102, 241, 0.5);
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-    }
+    .auth-btn:hover { transform: translateY(-2px); }
+    .fade-out { opacity: 0; }
   </style>
 </head>
-<body class="bg-gradient-to-br from-gray-900 via-indigo-950 to-purple-950 min-h-screen flex items-center justify-center p-4" x-data="loginApp()" x-init="init()">
+<body class="bg-gradient-to-br from-gray-900 via-indigo-950 to-purple-950 flex items-center justify-center min-h-screen p-4" x-data="loginApp()" x-init="init()">
 
-<!-- Back to Home Button -->
-<div class="fixed top-6 left-6 z-50">
-  <a href="index.html" class="back-btn flex items-center gap-2 px-4 py-2 glass-card rounded-lg text-white hover:bg-white/10 transition">
-    <i class="fas fa-arrow-left"></i>
-    <span class="hidden sm:inline">Back to Home</span>
-  </a>
-</div>
-
-<!-- Dark Mode Toggle -->
-<div class="fixed top-6 right-6 z-50">
-  <button @click="dark = !dark" class="p-3 glass-card rounded-lg text-white hover:bg-white/10 transition">
-    <i x-show="!dark" class="fas fa-moon text-lg"></i>
-    <i x-show="dark" class="fas fa-sun text-lg text-yellow-400"></i>
-  </button>
-</div>
-
-<div class="w-full max-w-5xl">
-  <div class="glass-card rounded-3xl overflow-hidden">
-    <div class="grid md:grid-cols-2 gap-0">
-      <!-- Left Panel -->
-      <div class="p-8 md:p-12 flex flex-col justify-between text-white">
-        <div>
-          <div class="flex items-center gap-3 mb-3">
-            <div class="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold">CT</div>
-            <h1 class="text-2xl md:text-3xl font-bold">CapTcha Tool</h1>
-          </div>
-          <p class="text-gray-300 text-sm md:text-base mb-8 leading-relaxed">
-            Login to access your personal dashboard and start solving captchas instantly!
-          </p>
-          <ul class="space-y-3">
-            <li class="flex items-center text-sm md:text-base">
-              <i class="fas fa-check-circle text-green-400 mr-3"></i> Secure Authentication
-            </li>
-            <li class="flex items-center text-sm md:text-base">
-              <i class="fas fa-check-circle text-green-400 mr-3"></i> Fast & Simple
-            </li>
-            <li class="flex items-center text-sm md:text-base">
-              <i class="fas fa-check-circle text-green-400 mr-3"></i> Instant Access
-            </li>
-          </ul>
-        </div>
-        <div class="mt-10 md:mt-16 flex justify-center md:block">
-          <svg width="180" height="180" viewBox="0 0 200 200" class="hidden md:block opacity-80">
-            <g transform="translate(100,100)">
-              <path d="M-40,-40 L-40,-70 L-10,-85 L40,-70 L40,-40 L20,-40 L20,10 L-20,10 L-20,-40 Z" fill="#1e293b" stroke="#475569" stroke-width="2"/>
-              <rect x="-15" y="-35" width="30" height="45" fill="#1e40af"/>
-              <circle cx="0" cy="-55" r="8" fill="#fbbf24"/>
-            </g>
-          </svg>
-        </div>
-      </div>
-      
-      <!-- Right Panel -->
-      <div class="p-8 md:p-12 bg-slate-900/50 flex flex-col items-center justify-center text-white">
-        <div class="mb-8">
-          <svg width="120" height="120" viewBox="0 0 140 140" class="bird-svg mx-auto">
-            <g transform="translate(70,70)">
-              <path d="M0,-40 Q-15,-50 -30,-45 Q-45,-40 -50,-25 Q-45,-10 -30,0 Q-15,-5 0,-15 Q15,-5 30,0 Q45,-10 50,-25 Q45,-40 30,-45 Q15,-50 0,-40"
-                    fill="url(#birdGradient)" stroke="#60a5fa" stroke-width="2"/>
-              <defs>
-                <linearGradient id="birdGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#93c5fd"/>
-                  <stop offset="100%" stop-color="#60a5fa"/>
-                </linearGradient>
-              </defs>
-            </g>
-          </svg>
-        </div>
-        
-        <h2 class="text-2xl md:text-3xl font-bold mb-3">Welcome Back!</h2>
-        <p class="text-gray-400 text-sm md:text-base mb-8 max-w-xs text-center">
-          Login to your account to continue
-        </p>
-        
-        <!-- Firebase Login Form -->
-        <form @submit.prevent="handleLogin" class="w-full max-w-sm space-y-4">
-          <div>
-            <label class="block text-sm font-medium mb-2 text-gray-300">Email</label>
-            <input 
-              type="email" 
-              x-model="email" 
-              required
-              placeholder="your@email.com"
-              class="input-field w-full px-4 py-3 rounded-lg text-white placeholder-gray-500"
-            />
-          </div>
-          
-          <div>
-            <label class="block text-sm font-medium mb-2 text-gray-300">Password</label>
-            <input 
-              type="password" 
-              x-model="password" 
-              required
-              placeholder="••••••••"
-              class="input-field w-full px-4 py-3 rounded-lg text-white placeholder-gray-500"
-            />
-          </div>
-          
-          <div x-show="errorMessage" class="text-red-400 text-sm text-center" x-text="errorMessage"></div>
-          
-          <button 
-            type="submit" 
-            :disabled="loading"
-            class="auth-btn w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold px-8 py-3 rounded-lg flex items-center justify-center gap-3 text-lg"
-            :class="{ 'opacity-50 cursor-not-allowed': loading }"
-          >
-            <i class="fas" :class="loading ? 'fa-spinner fa-spin' : 'fa-sign-in-alt'"></i>
-            <span x-text="loading ? 'Signing in...' : 'Sign In'"></span>
-          </button>
-        </form>
-        
-        <p class="text-gray-500 text-sm mt-6 text-center">
-          Don't have an account? <a href="register.html" class="text-indigo-400 hover:text-indigo-300 transition">Register here</a>
-        </p>
-      </div>
+<div class="w-full max-w-md glass-card rounded-3xl p-8 text-white">
+  <h2 class="text-3xl font-bold mb-6 text-center">Welcome Back</h2>
+  <form @submit.prevent="handleLogin" class="space-y-5">
+    <div>
+      <label class="block text-sm mb-2">Email</label>
+      <input type="email" x-model="email" class="input-field w-full px-4 py-3 rounded-lg text-white" placeholder="you@example.com" required>
     </div>
-  </div>
+    <div>
+      <label class="block text-sm mb-2">Password</label>
+      <input type="password" x-model="password" class="input-field w-full px-4 py-3 rounded-lg text-white" placeholder="••••••••" required>
+    </div>
+
+    <div x-show="errorMessage" class="text-red-400 text-center text-sm" x-text="errorMessage"></div>
+
+    <button type="submit" :disabled="loading"
+      class="auth-btn w-full bg-gradient-to-r from-indigo-500 to-purple-600 py-3 rounded-lg font-semibold flex justify-center items-center gap-2"
+      :class="{ 'opacity-50 cursor-not-allowed': loading }">
+      <i class="fas" :class="loading ? 'fa-spinner fa-spin' : 'fa-sign-in-alt'"></i>
+      <span x-text="loading ? 'Signing in...' : 'Sign In'"></span>
+    </button>
+  </form>
+
+  <p class="text-gray-400 text-center mt-6 text-sm">
+    Don't have an account? <a href="register.html" class="text-indigo-400 hover:text-indigo-300">Register here</a>
+  </p>
 </div>
 
 <script>
-  // Firebase Configuration
   const firebaseConfig = {
     apiKey: "AIzaSyA9sJoZSzbmKJ-7F9jsYVmf7m4cMJ_JUuA",
     authDomain: "captcha-finder.firebaseapp.com",
@@ -176,61 +62,41 @@
     appId: "1:268327722037:web:54ba44e1d4ccc2c734e57c",
     measurementId: "G-LX1WXZFJCW"
   };
-
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
 
   function loginApp() {
     return {
-      dark: localStorage.getItem('dark') === 'true',
-      email: '',
-      password: '',
-      loading: false,
-      errorMessage: '',
-      
+      email: '', password: '', errorMessage: '', loading: false,
+
       init() {
-        this.$watch('dark', val => {
-          document.documentElement.classList.toggle('dark', val);
-          localStorage.setItem('dark', val);
-        });
-        if (localStorage.getItem('dark') === null && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-          this.dark = true;
-        }
-        document.documentElement.classList.toggle('dark', this.dark);
-        
-        // Redirect if already logged in
         auth.onAuthStateChanged(user => {
-          if (user) window.location.replace('dashboard.html');
+          if (user) window.location.href = 'dashboard.html';
         });
       },
-      
+
       async handleLogin() {
-        this.loading = true;
-        this.errorMessage = '';
+        this.loading = true; this.errorMessage = '';
         try {
-          const userCredential = await auth.signInWithEmailAndPassword(this.email, this.password);
+          const userCred = await auth.signInWithEmailAndPassword(this.email.trim(), this.password);
+          const token = await userCred.user.getIdToken();
           localStorage.setItem('firebase_user', JSON.stringify({
-            uid: userCredential.user.uid,
-            email: userCredential.user.email
+            uid: userCred.user.uid,
+            email: userCred.user.email,
+            token
           }));
-          window.location.replace('dashboard.html');
-        } catch (error) {
-          switch (error.code) {
-            case 'auth/user-not-found':
-              this.errorMessage = 'No account found with this email.'; break;
-            case 'auth/wrong-password':
-              this.errorMessage = 'Incorrect password.'; break;
-            case 'auth/invalid-email':
-              this.errorMessage = 'Invalid email address.'; break;
-            case 'auth/too-many-requests':
-              this.errorMessage = 'Too many attempts. Please try again later.'; break;
-            default:
-              this.errorMessage = 'Login failed. Please try again.';
+          document.body.classList.add('fade-out');
+          setTimeout(() => window.location.href = 'dashboard.html', 400);
+        } catch (e) {
+          this.loading = false;
+          switch (e.code) {
+            case 'auth/user-not-found': this.errorMessage = 'No account found with this email.'; break;
+            case 'auth/wrong-password': this.errorMessage = 'Incorrect password.'; break;
+            default: this.errorMessage = 'Login failed. Please try again.';
           }
         }
-        this.loading = false;
       }
-    };
+    }
   }
 </script>
 </body>
