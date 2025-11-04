@@ -48,20 +48,9 @@
       opacity: 0.7;
       cursor: not-allowed;
     }
-    .avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      object-fit: cover;
-      ring: 2px solid #6366f1;
-      transition: transform 0.2s ease;
-    }
-    .avatar:hover {
-      transform: scale(1.15);
-    }
   </style>
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300" x-data="app()" x-init="init()">
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300" x-data="app()">
 
 <!-- Navbar -->
 <header class="fixed top-0 w-full z-50 glass border-b border-white/10">
@@ -70,60 +59,26 @@
       <img src="assets/logo.svg" alt="CapTcha Tool" class="w-10 h-10">
       <span class="text-xl font-bold">CapTcha Tool</span>
     </a>
-
-    <!-- Desktop Nav -->
     <div class="hidden md:flex items-center space-x-6">
       <a href="#features" class="hover:text-indigo-400 transition">Features</a>
       <a href="#pricing" class="hover:text-indigo-400 transition">Pricing</a>
-
-      <!-- NOT LOGGED IN: Show Login -->
-      <template x-if="!user.id">
-        <a href="login.html" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition">Login</a>
-      </template>
-
-      <!-- LOGGED IN: Show Dashboard + Avatar ONLY -->
-      <template x-if="user.id">
-        <div class="flex items-center space-x-3">
-          <a href="dashboard.html" class="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg hover:shadow-lg transition text-sm font-medium">Dashboard</a>
-          <a href="dashboard.html">
-            <img :src="user.avatar" alt="Profile" class="avatar ring-2 ring-indigo-500">
-          </a>
-        </div>
-      </template>
-
+      <a href="login.html" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition">Login</a>
+      <a href="register.html" class="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg hover:shadow-lg transition">Register</a>
       <button @click="dark = !dark" class="ml-4 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition">
         <i x-show="!dark" class="fas fa-moon text-lg"></i>
         <i x-show="dark" class="fas fa-sun text-lg text-yellow-400"></i>
       </button>
     </div>
-
-    <!-- Mobile Menu Toggle -->
     <button @click="mobileMenu = !mobileMenu" class="md:hidden">
-      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-      </svg>
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
     </button>
   </nav>
-
-  <!-- Mobile Menu -->
   <div x-show="mobileMenu" class="md:hidden bg-white/95 dark:bg-gray-800/95 glass" x-transition>
     <div class="container mx-auto px-4 py-4 space-y-3">
       <a href="#features" class="block">Features</a>
       <a href="#pricing" class="block">Pricing</a>
-
-      <!-- NOT LOGGED IN -->
-      <template x-if="!user.id">
-        <a href="login.html" class="block">Login</a>
-      </template>
-
-      <!-- LOGGED IN -->
-      <template x-if="user.id">
-        <a href="dashboard.html" class="block font-medium text-indigo-600">Dashboard</a>
-        <a href="dashboard.html" class="flex items-center space-x-2 py-1">
-          <img :src="user.avatar" alt="Profile" class="w-8 h-8 rounded-full ring-2 ring-indigo-500">
-        </a>
-      </template>
-
+      <a href="login.html" class="block">Login</a>
+      <a href="register.html" class="block text-indigo-600 font-medium">Register</a>
       <button @click="dark = !dark" class="flex items-center space-x-2">
         <i x-show="!dark" class="fas fa-moon"></i>
         <i x-show="dark" class="fas fa-sun text-yellow-400"></i>
@@ -143,16 +98,9 @@
       AI-powered, undetectable, 99.9% success rate. Bypass reCAPTCHA, hCaptcha, FunCaptcha, and more.
     </p>
     <div class="flex flex-col sm:flex-row gap-4 justify-center animate-fade">
-      <template x-if="!user.id">
-        <a href="login.html" class="px-8 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold rounded-xl hover:shadow-xl transition transform hover:-translate-y-1">
-          Get Started
-        </a>
-      </template>
-      <template x-if="user.id">
-        <a href="dashboard.html" class="px-8 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold rounded-xl hover:shadow-xl transition transform hover:-translate-y-1">
-          Go to Dashboard
-        </a>
-      </template>
+      <a href="login.html" class="px-8 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold rounded-xl hover:shadow-xl transition transform hover:-translate-y-1">
+        Get Started
+      </a>
       <a href="#features" class="px-8 py-4 border border-gray-300 dark:border-gray-600 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition">
         See Features
       </a>
@@ -276,74 +224,46 @@
 <!-- SellAuth Embed -->
 <script src="https://sellauth.com/assets/js/sellauth-embed-2.js"></script>
 <script>
-function app() {
-  return {
-    mobileMenu: false,
-    dark: localStorage.getItem('dark') === 'true',
-    user: { id: '', avatar: '' },
-
-    init() {
-      // Theme
-      this.$watch('dark', val => {
-        document.documentElement.classList.toggle('dark', val);
-        localStorage.setItem('dark', val);
-      });
-      if (localStorage.getItem('dark') === null && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        this.dark = true;
+  function app() {
+    return {
+      mobileMenu: false,
+      dark: localStorage.getItem('dark') === 'true',
+      init() {
+        this.$watch('dark', val => {
+          document.documentElement.classList.toggle('dark', val);
+          localStorage.setItem('dark', val);
+        });
+        if (localStorage.getItem('dark') === null && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          this.dark = true;
+        }
       }
+    };
+  }
 
-      // Check login
-      const token = localStorage.getItem('discord_token');
-      if (token) {
-        this.fetchUser(token);
-      }
-    },
-
-    fetchUser(token) {
-      fetch('https://discord.com/api/v10/users/@me', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      })
-      .then(r => r.ok ? r.json() : Promise.reject())
-      .then(data => {
-        this.user = {
-          id: data.id,
-          avatar: data.avatar
-            ? `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png?size=128`
-            : `https://cdn.discordapp.com/embed/avatars/${data.discriminator % 5}.png`
-        };
-      })
-      .catch(() => {
-        localStorage.removeItem('discord_token');
-        this.user = { id: '', avatar: '' };
-      });
+  function buyPlan(productId, variantId, button, originalText) {
+    const shopId = 159058;
+    if (button.classList.contains('loading')) return;
+    button.textContent = 'Loading...';
+    button.classList.add('loading');
+    if (!window.sellAuthEmbed) {
+      alert('Checkout failed. Try again.');
+      button.textContent = originalText;
+      button.classList.remove('loading');
+      return;
     }
-  };
-}
-
-function buyPlan(productId, variantId, button, originalText) {
-  const shopId = 159058;
-  if (button.classList.contains('loading')) return;
-  button.textContent = 'Loading...';
-  button.classList.add('loading');
-  if (!window.sellAuthEmbed) {
-    alert('Checkout failed. Try again.');
-    button.textContent = originalText;
-    button.classList.remove('loading');
-    return;
+    try {
+      window.sellAuthEmbed.checkout(null, {
+        shopId: shopId,
+        cart: [{ productId: productId, variantId: variantId, quantity: 1 }]
+      });
+    } catch (err) {
+      console.error(err);
+    }
+    setTimeout(() => {
+      button.textContent = originalText;
+      button.classList.remove('loading');
+    }, 3000);
   }
-  try {
-    window.sellAuthEmbed.checkout(null, {
-      shopId: shopId,
-      cart: [{ productId: productId, variantId: variantId, quantity: 1 }]
-    });
-  } catch (err) {
-    console.error(err);
-  }
-  setTimeout(() => {
-    button.textContent = originalText;
-    button.classList.remove('loading');
-  }, 3000);
-}
 </script>
 </body>
 </html>
