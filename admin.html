@@ -1,109 +1,83 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" x-data="admin()" x-init="init()">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin – CapTcha Tool</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 </head>
-<body class="bg-gray-900 text-gray-100" x-data="admin()" x-init="checkAuth()">
+<body class="bg-gray-900 text-gray-100 min-h-screen">
 
-<div x-show="!isAdmin" class="flex items-center justify-center min-h-screen">
+<!-- LOADING -->
+<div x-show="loading" class="flex items-center justify-center min-h-screen">
+  <div class="text-xl">Checking admin access...</div>
+</div>
+
+<!-- NOT ADMIN -->
+<div x-show="!isAdmin && !loading" class="flex items-center justify-center min-h-screen">
   <div class="text-center">
     <h1 class="text-2xl font-bold mb-4">Admin Access Required</h1>
-    <a href="https://discord.com/oauth2/authorize?client_id=963238863256567848&response_type=code&redirect_uri=https%3A%2F%2Fcapovh.github.io%2FCapTcha%2Fadmin.html&scope=identify+guilds+guilds.join" 
-       class="px-6 py-2 bg-indigo-600 text-white rounded-lg">Login with Discord</a>
+    <button @click="loginWithDiscord()" 
+            class="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+      Login with Discord
+    </button>
   </div>
 </div>
 
-<template x-if="isAdmin">
-  <div class="min-h-screen">
-    <!-- Admin Navbar -->
+<!-- ADMIN DASHBOARD -->
+<template x-if="isAdmin && !loading">
+  <div>
+    <!-- Navbar -->
     <header class="bg-gray-800 border-b border-gray-700 p-4">
       <div class="flex items-center justify-between">
         <h1 class="text-2xl font-bold">Admin Dashboard</h1>
         <div class="flex items-center space-x-4">
-          <span>Welcome, <span x-text="user.username"></span></span>
-          <button @click="logout()" class="px-4 py-2 bg-red-600 text-white rounded-lg">Logout</button>
+          <span class="text-sm">Welcome, <strong x-text="user.username"></strong></span>
+          <button @click="logout()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Logout</button>
         </div>
       </div>
     </header>
 
     <!-- Tabs -->
     <div class="flex border-b border-gray-700">
-      <button @click="activeTab='users'" 
-              :class="activeTab === 'users' ? 'border-b-2 border-indigo-500 text-indigo-400' : 'text-gray-400'"
-              class="px-6 py-3">Users</button>
       <button @click="activeTab='keys'" 
-              :class="activeTab === 'keys' ? 'border-b-2 border-indigo-500 text-indigo-400' : 'text-gray-400'"
+              :class="activeTab==='keys' ? 'border-b-2 border-indigo-500 text-indigo-400' : 'text-gray-400'"
               class="px-6 py-3">Keys</button>
       <button @click="activeTab='stats'" 
-              :class="activeTab === 'stats' ? 'border-b-2 border-indigo-500 text-indigo-400' : 'text-gray-400'"
+              :class="activeTab==='stats' ? 'border-b-2 border-indigo-500 text-indigo-400' : 'text-gray-400'"
               class="px-6 py-3">Stats</button>
     </div>
 
-    <!-- Users Tab -->
-    <div x-show="activeTab === 'users'" class="p-6">
-      <div class="bg-gray-800 rounded-lg overflow-hidden">
-        <table class="w-full">
-          <thead>
-            <tr class="border-b border-gray-700">
-              <th class="p-3 text-left">Username</th>
-              <th class="p-3 text-left">Email</th>
-              <th class="p-3 text-left">Discord ID</th>
-              <th class="p-3 text-left">Created</th>
-              <th class="p-3 text-left">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <template x-for="u in users" :key="u.id">
-              <tr class="border-b border-gray-800">
-                <td class="p-3" x-text="u.username"></td>
-                <td class="p-3" x-text="u.email"></td>
-                <td class="p-3" x-text="u.discord_id"></td>
-                <td class="p-3" x-text="new Date(u.created_at).toLocaleDateString()"></td>
-                <td class="p-3">
-                  <button @click="deleteUser(u.id)" class="text-red-400 hover:text-red-300">Delete</button>
-                </td>
-              </tr>
-            </template>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Keys Tab -->
+    <!-- KEYS TAB -->
     <div x-show="activeTab === 'keys'" class="p-6">
       <div class="bg-gray-800 rounded-lg overflow-hidden">
-        <table class="w-full">
-          <thead>
-            <tr class="border-b border-gray-700">
+        <table class="w-full text-sm">
+          <thead class="bg-gray-700">
+            <tr>
               <th class="p-3 text-left">Key Code</th>
-              <th class="p-3 text-left">User</th>
               <th class="p-3 text-left">Plan</th>
               <th class="p-3 text-left">Expires</th>
               <th class="p-3 text-left">Status</th>
-              <th class="p-3 text-left">Actions</th>
+              <th class="p-3 text-left">Claimed By</th>
             </tr>
           </thead>
           <tbody>
-            <template x-for="k in keys" :key="k.id">
-              <tr class="border-b border-gray-800">
-                <td class="p-3 font-mono" x-text="k.key_code"></td>
-                <td class="p-3" x-text="k.username || 'Unclaimed'"></td>
-                <td class="p-3" x-text="k.plan"></td>
-                <td class="p-3" x-text="new Date(k.expires).toLocaleDateString()"></td>
+            <template x-for="key in keys" :key="key.code">
+              <tr class="border-b border-gray-800 hover:bg-gray-700/50">
+                <td class="p-3 font-mono text-xs" x-text="key.code"></td>
+                <td class="p-3" x-text="key.plan"></td>
+                <td class="p-3" x-text="formatDate(key.expires)"></td>
                 <td class="p-3">
-                  <span :class="k.status === 'active' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'"
+                  <span :class="key.status === 'active' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'"
                         class="px-2 py-1 rounded text-xs">
-                    <span x-text="k.status"></span>
+                    <span x-text="key.status"></span>
                   </span>
                 </td>
-                <td class="p-3 space-x-2">
-                  <button @click="toggleKeyStatus(k.id)" class="text-blue-400 hover:text-blue-300">Toggle</button>
-                  <button @click="assignKey(k.id)" class="text-green-400 hover:text-green-300">Assign</button>
-                </td>
+                <td class="p-3 text-xs" x-text="key.claimedBy || '—'"></td>
               </tr>
             </template>
           </tbody>
@@ -111,142 +85,143 @@
       </div>
     </div>
 
-    <!-- Stats Tab -->
-    <div x-show="activeTab === 'stats'" class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div class="card">
-        <h3 class="text-lg font-semibold mb-2">Total Users</h3>
-        <p class="text-3xl font-bold" x-text="stats.total_users"></p>
+    <!-- STATS TAB -->
+    <div x-show="activeTab === 'stats'" class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="bg-gray-800 p-6 rounded-lg">
+        <h3 class="text-lg font-semibold text-gray-400">Total Keys</h3>
+        <p class="text-3xl font-bold mt-2" x-text="keys.length"></p>
       </div>
-      <div class="card">
-        <h3 class="text-lg font-semibold mb-2">Active Keys</h3>
-        <p class="text-3xl font-bold" x-text="stats.active_keys"></p>
+      <div class="bg-gray-800 p-6 rounded-lg">
+        <h3 class="text-lg font-semibold text-gray-400">Active Keys</h3>
+        <p class="text-3xl font-bold mt-2 text-green-400" 
+           x-text="keys.filter(k => k.status === 'active').length"></p>
       </div>
-      <div class="card">
-        <h3 class="text-lg font-semibold mb-2">Total Injections</h3>
-        <p class="text-3xl font-bold" x-text="stats.total_injections"></p>
+      <div class="bg-gray-800 p-6 rounded-lg">
+        <h3 class="text-lg font-semibold text-gray-400">Total Injections</h3>
+        <p class="text-3xl font-bold mt-2 text-blue-400" x-text="injections.length"></p>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-const API_BASE = 'https://your-api.com/api';
+// === CONFIG ===
+const DISCORD_CLIENT_ID = '963238863256567848';
+const REDIRECT_URI = 'https://capovh.github.io/CapTcha/admin.html';
+const GITHUB_RAW_URL = 'https://raw.githubusercontent.com/72395839745598327589k/dsadasdasd324e3242/refs/heads/main/keys.txt';
+const ADMIN_DISCORD_IDS = ['1393017932610666577', '805954114231205978']; // Add your ID
+
+// Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyA9sJoZSzbmKJ-7F9jsYVmf7m4cMJ_JUuA",
+  authDomain: "captcha-finder.firebaseapp.com",
+  projectId: "captcha-finder",
+  storageBucket: "captcha-finder.firebasestorage.app",
+  messagingSenderId: "268327722037",
+  appId: "1:268327722037:web:54ba44e1d4ccc2c734e57c"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
 function admin() {
   return {
-    activeTab: 'users',
-    user: null,
+    loading: true,
     isAdmin: false,
-    users: [],
+    user: null,
     keys: [],
-    stats: {},
+    injections: [],
+    activeTab: 'keys',
 
-    async checkAuth() {
+    async init() {
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get('code');
-      
+
       if (code) {
-        // Exchange code for token
-        const tokenResponse = await fetch(`${API_BASE}/auth/discord`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ code })
-        });
-        
-        const tokenData = await tokenResponse.json();
-        localStorage.setItem('discord_token', tokenData.access_token);
-        
-        // Clear URL params
+        await this.exchangeCode(code);
         window.history.replaceState({}, document.title, window.location.pathname);
-      }
-
-      const token = localStorage.getItem('discord_token');
-      if (!token) {
-        // Redirect to Discord OAuth
-        window.location.href = `https://discord.com/oauth2/authorize?client_id=YOUR_CLIENT_ID&redirect_uri=${encodeURIComponent(window.location.href)}&response_type=code&scope=identify%20guilds`;
-        return;
-      }
-
-      // Verify admin
-      const verifyResponse = await fetch(`${API_BASE}/admin/verify`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      
-      const verifyData = await verifyResponse.json();
-      if (verifyData.isAdmin) {
-        this.isAdmin = true;
-        this.user = verifyData.user;
-        this.loadAdminData();
       } else {
-        this.isAdmin = false;
-        localStorage.removeItem('discord_token');
+        const saved = localStorage.getItem('discord_user');
+        if (saved) {
+          this.user = JSON.parse(saved);
+          if (ADMIN_DISCORD_IDS.includes(this.user.id)) {
+            this.isAdmin = true;
+            await this.loadData();
+          }
+        }
+      }
+      this.loading = false;
+    },
+
+    async exchangeCode(code) {
+      const tokenResponse = await fetch(`https://discord.com/api/oauth2/token`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          client_id: DISCORD_CLIENT_ID,
+          client_secret: 'YOUR_DISCORD_CLIENT_SECRET', // ← GET FROM DISCORD DEV PORTAL
+          grant_type: 'authorization_code',
+          code: code,
+          redirect_uri: REDIRECT_URI,
+          scope: 'identify guilds'
+        })
+      });
+
+      const tokenData = await tokenResponse.json();
+      if (!tokenData.access_token) return;
+
+      const userResponse = await fetch('https://discord.com/api/users/@me', {
+        headers: { Authorization: `Bearer ${tokenData.access_token}` }
+      });
+      const user = await userResponse.json();
+
+      localStorage.setItem('discord_user', JSON.stringify(user));
+
+      if (ADMIN_DISCORD_IDS.includes(user.id)) {
+        this.user = user;
+        this.isAdmin = true;
+        await this.loadData();
+      } else {
+        alert('You are not an admin.');
+        this.logout();
       }
     },
 
-    async loadAdminData() {
-      const token = localStorage.getItem('discord_token');
-      
-      // Load users
-      const usersResponse = await fetch(`${API_BASE}/admin/users`, {
-        headers: { Authorization: `Bearer ${token}` }
+    async loadData() {
+      // Load keys from GitHub
+      const res = await fetch(GITHUB_RAW_URL);
+      const text = await res.text();
+      const lines = text.trim().split('\n').filter(l => l);
+      const githubKeys = lines.map(line => {
+        const [code, plan, expires] = line.split('|');
+        return { code, plan, expires, status: 'active', claimedBy: null };
       });
-      this.users = await usersResponse.json();
 
-      // Load keys
-      const keysResponse = await fetch(`${API_BASE}/admin/keys`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      this.keys = await keysResponse.json();
+      // Load claimed keys from Firebase
+      const snap = await db.ref('keys').once('value');
+      const claimed = snap.val() || {};
+      this.keys = githubKeys.map(k => ({
+        ...k,
+        claimedBy: claimed[k.code]?.claimedBy || null
+      }));
 
-      // Load stats
-      const statsResponse = await fetch(`${API_BASE}/admin/stats`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      this.stats = await statsResponse.json();
+      // Load injections
+      const injSnap = await db.ref('injections').once('value');
+      this.injections = Object.values(injSnap.val() || {});
     },
 
-    async deleteUser(userId) {
-      if (!confirm('Delete this user?')) return;
-      
-      const token = localStorage.getItem('discord_token');
-      await fetch(`${API_BASE}/admin/users/${userId}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      
-      this.loadAdminData();
+    loginWithDiscord() {
+      const authUrl = `https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify%20guilds`;
+      window.location = authUrl;
     },
 
-    async toggleKeyStatus(keyId) {
-      const token = localStorage.getItem('discord_token');
-      await fetch(`${API_BASE}/admin/keys/${keyId}/toggle`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      
-      this.loadAdminData();
+    logout() {
+      localStorage.removeItem('discord_user');
+      this.isAdmin = false;
+      this.user = null;
     },
 
-    async assignKey(keyId) {
-      const username = prompt('Assign to username:');
-      if (!username) return;
-      
-      const token = localStorage.getItem('discord_token');
-      await fetch(`${API_BASE}/admin/keys/${keyId}/assign`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}` 
-        },
-        body: JSON.stringify({ username })
-      });
-      
-      this.loadAdminData();
-    },
-
-    async logout() {
-      localStorage.removeItem('discord_token');
-      window.location.href = '/';
+    formatDate(date) {
+      return new Date(date).toLocaleDateString();
     }
   };
 }
