@@ -20,16 +20,40 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
   <style>
-    :root { --sidebar-w: 16rem; --sidebar-collapsed: 5rem; }
     body { font-family: 'Inter', sans-serif; }
     .glass { @apply bg-white/10 backdrop-blur-md border border-white/10 rounded-xl; }
     .dark .glass { @apply bg-gray-800/80 border-gray-700/50; }
-    .sidebar { @apply fixed inset-y-0 left-0 w-[var(--sidebar-w)] bg-gray-900/95 backdrop-blur-xl border-r border-gray-700 transition-all duration-300 z-40; }
-    .sidebar.collapsed { @apply -translate-x-full lg:translate-x-0 lg:w-[var(--sidebar-collapsed)]; }
-    .nav-item { @apply flex items-center space-x-3 p-3 rounded-lg text-gray-300 hover:bg-gray-800 transition; }
-    .nav-item.active { @apply bg-indigo-600/20 text-indigo-300; }
-    .badge { @apply ml-auto bg-yellow-500/20 text-yellow-300 text-xs px-2 py-0.5 rounded-full; }
-    .card { @apply glass p-6 transition-all hover:-translate-y-1 hover:shadow-xl; }
+
+    /* Sidebar Tooltip */
+    [x-tooltip] {
+      position: relative;
+    }
+    [x-tooltip]::after {
+      content: attr(x-tooltip);
+      position: absolute;
+      left: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      margin-left: 8px;
+      background: #1f2937;
+      color: white;
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+      z-index: 10;
+    }
+    [x-tooltip]:hover::after {
+      opacity: 1;
+    }
+
+    /* Smooth collapse */
+    [x-collapse] {
+      transition: height 0.3s ease;
+    }
   </style>
 </head>
 <body class="bg-gradient-to-br from-gray-900 via-gray-800 to-black text-gray-100 min-h-screen" x-data="dashboard()" x-init="feather.replace(); initAuth()">
@@ -38,7 +62,7 @@
 <header class="fixed top-0 left-0 right-0 z-50 glass border-b border-gray-700 flex items-center justify-between px-6 py-4">
   <div class="flex items-center space-x-4">
     <a href="index.html" class="flex items-center space-x-2">
-      <div class="w-9 h-9 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold">CT</div>
+      <div class="w-9 h-9 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">CT</div>
       <span class="text-xl font-bold">CapTcha</span>
     </a>
   </div>
@@ -65,74 +89,99 @@
 </header>
 
 <!------------------- LEFT SIDEBAR ------------------->
-<aside class="sidebar" :class="{ 'collapsed': collapsed }">
-  <div class="p-5 space-y-8">
+<aside class="fixed inset-y-0 left-0 w-64 bg-gray-900 border-r border-gray-800 transition-all duration-300 z-50 flex flex-col" 
+       :class="{ 'w-20': collapsed, 'lg:w-64': !collapsed }" 
+       x-data="{ collapsed: false }" 
+       x-init="$watch('collapsed', v => localStorage.setItem('sidebar', v))" 
+       x-effect="collapsed = localStorage.getItem('sidebar') === 'true'">
 
-    <!-- Mobile close -->
-    <button @click="collapsed=!collapsed" class="lg:hidden absolute right-4 top-4 p-2 rounded-lg hover:bg-gray-800">
-      <i data-feather="x" class="w-5 h-5"></i>
-    </button>
+  <!-- Sidebar Header -->
+  <div class="p-5 border-b border-gray-800">
+    <div class="flex items-center justify-between">
+      <a href="index.html" class="flex items-center space-x-3" x-show="!collapsed">
+        <div class="w-9 h-9 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">CT</div>
+        <span class="text-xl font-bold text-white">CapTcha</span>
+      </a>
+      <button @click="collapsed = !collapsed" class="p-1.5 rounded-lg hover:bg-gray-800 text-gray-400 hover:text-white transition">
+        <i data-feather="chevrons-left" x-show="!collapsed" class="w-5 h-5"></i>
+        <i data-feather="chevrons-right" x-show="collapsed" class="w-5 h-5"></i>
+      </button>
+    </div>
+  </div>
 
+  <!-- Scrollable Nav -->
+  <nav class="flex-1 overflow-y-auto p-4 space-y-6">
+    
     <!-- MAIN -->
     <div>
-      <p class="text-xs uppercase text-gray-500 mb-3" x-show="!collapsed">Main</p>
-      <nav class="space-y-1">
-        <a href="dashboard.html" class="nav-item active">
-          <i data-feather="airplay" class="w-5 h-5"></i>
-          <span x-show="!collapsed">Dashboard</span>
-          <span class="badge" x-show="!collapsed">NEW</span>
+      <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2" x-show="!collapsed">Main</p>
+      <div class="space-y-1">
+        <a href="dashboard.html" class="group flex items-center justify-between p-3 rounded-lg bg-indigo-600/20 text-indigo-300 hover:bg-indigo-600/30 transition">
+          <div class="flex items-center space-x-3">
+            <i data-feather="airplay" class="w-5 h-5"></i>
+            <span x-show="!collapsed">Dashboard</span>
+          </div>
+          <span class="bg-yellow-500/20 text-yellow-300 text-xs px-2 py-0.5 rounded-full" x-show="!collapsed">NEW</span>
         </a>
 
-        <a href="#" class="nav-item">
+        <a href="#" class="group flex items-center p-3 rounded-lg text-gray-300 hover:bg-gray-800 transition" x-tooltip="'Configs'">
           <i data-feather="save" class="w-5 h-5"></i>
           <span x-show="!collapsed">Configs</span>
         </a>
 
-        <a href="#" class="nav-item">
+        <a href="#" class="group flex items-center p-3 rounded-lg text-gray-300 hover:bg-gray-800 transition" x-tooltip="'Scripts'">
           <i data-feather="code" class="w-5 h-5"></i>
           <span x-show="!collapsed">Scripts</span>
         </a>
 
-        <div x-data="{open:true}">
-          <button @click="open=!open" class="w-full nav-item">
-            <i data-feather="key" class="w-5 h-5"></i>
-            <span x-show="!collapsed" class="flex-1 text-left">Your Keys</span>
-            <i :class="open?'rotate-90':''" data-feather="chevron-right" class="w-4 h-4 transition" x-show="!collapsed"></i>
+        <!-- Your Keys Dropdown -->
+        <div x-data="{ open: true }">
+          <button @click="open = !open" class="w-full group flex items-center justify-between p-3 rounded-lg text-gray-300 hover:bg-gray-800 transition">
+            <div class="flex items-center space-x-3">
+              <i data-feather="key" class="w-5 h-5"></i>
+              <span x-show="!collapsed">Your Keys</span>
+            </div>
+            <i :class="open ? 'rotate-90' : ''" data-feather="chevron-right" class="w-4 h-4 transition-transform" x-show="!collapsed"></i>
           </button>
-          <div x-show="open && !collapsed" x-collapse class="pl-10 mt-1">
-            <a href="#" class="block py-1 text-sm text-gray-400 hover:text-white">View all</a>
+          <div x-show="open && !collapsed" x-collapse class="ml-8 mt-1 space-y-1">
+            <a href="#" class="block py-1.5 text-sm text-gray-400 hover:text-white transition">View all</a>
           </div>
         </div>
-      </nav>
+      </div>
     </div>
 
     <!-- OTHER -->
     <div>
-      <p class="text-xs uppercase text-gray-500 mb-3" x-show="!collapsed">Other</p>
-      <nav class="space-y-1">
-        <a href="#" class="nav-item">
-          <i data-feather="file-text" class="w-5 h-5"></i>
-          <span x-show="!collapsed">Documentation</span>
-          <span class="badge" x-show="!collapsed">NEW</span>
+      <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2" x-show="!collapsed">Other</p>
+      <div class="space-y-1">
+        <a href="#" class="group flex items-center justify-between p-3 rounded-lg text-gray-300 hover:bg-gray-800 transition">
+          <div class="flex items-center space-x-3">
+            <i data-feather="file-text" class="w-5 h-5"></i>
+            <span x-show="!collapsed">Documentation</span>
+          </div>
+          <span class="bg-yellow-500/20 text-yellow-300 text-xs px-2 py-0.5 rounded-full" x-show="!collapsed">NEW</span>
         </a>
 
-        <a href="https://discord.gg/captcha" target="_blank" class="nav-item">
+        <a href="https://discord.gg/captcha" target="_blank" class="group flex items-center p-3 rounded-lg text-gray-300 hover:bg-gray-800 transition" x-tooltip="'Discord'">
           <i class="fab fa-discord w-5 h-5"></i>
           <span x-show="!collapsed">Discord</span>
         </a>
-      </nav>
+      </div>
     </div>
+  </nav>
 
-    <!-- Collapse -->
-    <button @click="collapsed=!collapsed" class="w-full mt-8 p-3 rounded-lg hover:bg-gray-800 text-sm flex items-center justify-center space-x-2" x-show="!collapsed">
-      <i data-feather="chevrons-left" class="w-5 h-5"></i>
+  <!-- Collapse Button (Mobile + Desktop) -->
+  <div class="p-4 border-t border-gray-800">
+    <button @click="collapsed = !collapsed" class="w-full flex items-center justify-center space-x-2 p-2.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-sm text-gray-300 transition" x-show="!collapsed">
+      <i data-feather="chevrons-left" class="w-4 h-4"></i>
       <span>Collapse</span>
     </button>
   </div>
 </aside>
 
 <!------------------- MAIN CONTENT ------------------->
-<main class="lg:ml-[var(--sidebar-w)] pt-20 px-6 pb-12 min-h-screen transition-all duration-300" :class="{ 'lg:ml-[var(--sidebar-collapsed)]': collapsed }">
+<main class="transition-all duration-300 pt-20 px-6 pb-12 min-h-screen" 
+      :class="{ 'lg:pl-64': !collapsed, 'lg:pl-20': collapsed }">
   <div class="max-w-7xl mx-auto">
 
     <!-- Welcome -->
@@ -152,7 +201,7 @@
 
     <!-- Stats -->
     <section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-      <div class="card">
+      <div class="glass p-6 rounded-xl transition-all hover:-translate-y-1 hover:shadow-xl">
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-4">
             <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
@@ -167,9 +216,9 @@
         </div>
       </div>
 
-      <div class="card">
+      <div class="glass p-6 rounded-xl transition-all hover:-translate-y-1 hover:shadow-xl">
         <div class="flex items-center justify-between">
-          <div class="flex items-center space-space-x-4">
+          <div class="flex items-center space-x-4">
             <div class="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center">
               <i data-feather="globe" class="w-6 h-6 text-white"></i>
             </div>
@@ -184,7 +233,7 @@
     </section>
 
     <!-- Keys Table -->
-    <section class="card">
+    <section class="glass p-6 rounded-xl">
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
         <div>
           <h2 class="text-xl font-semibold">Your Keys</h2>
@@ -340,17 +389,6 @@
     Alpine.effect(() => {
       document.documentElement.classList.toggle('dark', Alpine.store('dark'));
       localStorage.setItem('dark', Alpine.store('dark'));
-    });
-  });
-
-  // Tooltip for collapsed sidebar
-  document.addEventListener('alpine:init', () => {
-    Alpine.directive('tooltip', (el, { expression }) => {
-      const tip = expression;
-      el.classList.add('relative');
-      el.innerHTML += `<div class="absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 pointer-events-none transition-opacity whitespace-nowrap z-10">${tip}</div>`;
-      el.addEventListener('mouseenter', () => el.querySelector('div').classList.replace('opacity-0', 'opacity-100'));
-      el.addEventListener('mouseleave', () => el.querySelector('div').classList.replace('opacity-100', 'opacity-0'));
     });
   });
 </script>
