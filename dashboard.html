@@ -8,9 +8,15 @@
   <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>body { font-family: 'Inter', sans-serif; }</style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .glass { backdrop-filter: blur(12px); background: rgba(255,255,255,0.08); }
+    .avatar { transition: transform 0.3s ease; }
+    .avatar:hover { transform: scale(1.1); }
+  </style>
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen" x-data="dashboard()">
+<body class="bg-gradient-to-br from-gray-900 via-indigo-950 to-purple-950 text-gray-100 min-h-screen" x-data="dashboard()" x-init="init()">
 
 <!-- Navbar -->
 <header class="fixed top-0 w-full z-50 glass border-b border-white/10">
@@ -20,61 +26,146 @@
       <span class="text-xl font-bold">CapTcha Tool</span>
     </a>
     <div class="flex items-center space-x-4">
-      <button @click="copyKey()" class="text-sm px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded-lg">Copy API Key</button>
-      <a href="index.html" class="text-sm text-red-600 hover:underline">Logout</a>
+      <div class="flex items-center space-x-3">
+        <img :src="user.avatar" alt="User Avatar" class="w-9 h-9 rounded-full avatar object-cover ring-2 ring-indigo-500">
+        <span class="text-sm font-medium" x-text="user.name"></span>
+      </div>
+      <button @click="copyKey()" class="text-sm px-3 py-1 bg-indigo-600 rounded-lg hover:bg-indigo-700 transition">Copy API Key</button>
+      <button @click="logout()" class="text-sm text-red-400 hover:underline">Logout</button>
     </div>
   </nav>
 </header>
 
-<div class="pt-20 container mx-auto px-4">
-  <h1 class="text-3xl font-bold mb-8">Welcome back, <span x-text="user.name"></span>!</h1>
+<div class="pt-24 container mx-auto px-4 max-w-6xl">
+
+  <!-- User Profile Card -->
+  <div class="bg-white/5 glass border border-white/10 rounded-2xl p-6 mb-8 backdrop-blur-lg">
+    <div class="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
+      <img :src="user.avatar" alt="Discord Avatar" class="w-24 h-24 rounded-full ring-4 ring-indigo-500 shadow-xl avatar">
+      <div class="text-center md:text-left">
+        <h1 class="text-3xl font-bold" x-text="user.global_name || user.username"></h1>
+        <p class="text-gray-400" x-text="user.email"></p>
+        <p class="text-xs text-gray-500 mt-1">ID: <span x-text="user.id"></span></p>
+      </div>
+    </div>
+  </div>
 
   <!-- Stats -->
   <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-      <p class="text-sm text-gray-600 dark:text-gray-400">Solves Today</p>
+    <div class="bg-white/5 glass border border-white/10 p-6 rounded-xl">
+      <p class="text-sm text-gray-400">Solves Today</p>
       <p class="text-3xl font-bold" x-text="stats.today"></p>
     </div>
-    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-      <p class="text-sm text-gray-600 dark:text-gray-400">Success Rate</p>
-      <p class="text-3xl font-bold text-green-600" x-text="stats.success + '%'"></p>
+    <div class="bg-white/5 glass border border-white/10 p-6 rounded-xl">
+      <p class="text-sm text-gray-400">Success Rate</p>
+      <p class="text-3xl font-bold text-green-400" x-text="stats.success + '%'"></p>
     </div>
-    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-      <p class="text-sm text-gray-600 dark:text-gray-400">Avg Solve Time</p>
-      <p class="text-3xl font-bold" x-text="stats.time + 's'"></p>
+    <div class="bg-white/5 glass border border-white/10 p-6 rounded-xl">
+      <p class="text-sm text-gray-400">Avg Solve Time</p>
+      <p class="text-3xl font-bold text-indigo-400" x-text="stats.time + 's'"></p>
     </div>
-    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-      <p class="text-sm text-gray-600 dark:text-gray-400">Plan</p>
-      <p class="text-3xl font-bold text-indigo-600" x-text="user.plan"></p>
+    <div class="bg-white/5 glass border border-white/10 p-6 rounded-xl">
+      <p class="text-sm text-gray-400">Plan</p>
+      <p class="text-3xl font-bold text-purple-400" x-text="user.plan"></p>
     </div>
   </div>
 
   <!-- Chart -->
-  <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mb-8">
-    <h2 class="text-xl font-semibold mb-4">Solve Activity (Last 7 Days)</h2>
+  <div class="bg-white/5 glass border border-white/10 p-6 rounded-xl mb-8">
+    <h2 class="text-xl font-semibold mb-4 text-indigo-300">Solve Activity (Last 7 Days)</h2>
     <canvas id="solveChart" height="100"></canvas>
   </div>
 
   <!-- API Key -->
-  <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-    <h2 class="text-xl font-semibold mb-4">Your API Key</h2>
-    <div class="flex items-center space-x-3">
-      <code class="flex-1 bg-gray-100 dark:bg-gray-700 px-4 py-2 rounded-lg font-mono text-sm" x-text="apiKey"></code>
-      <button @click="regenerateKey()" classInstalled="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">Regenerate</button>
+  <div class="bg-white/5 glass border border-white/10 p-6 rounded-xl">
+    <h2 class="text-xl font-semibold mb-4 text-indigo-300">Your API Key</h2>
+    <div class="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-3">
+      <code class="flex-1 bg-gray-800/50 px-4 py-2 rounded-lg font-mono text-sm break-all" x-text="apiKey"></code>
+      <button @click="regenerateKey()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">Regenerate</button>
     </div>
-    <p class="text-sm text-gray-600 dark:text-gray-400 mt-3">Use this key in your scripts. Keep it secret!</p>
+    <p class="text-sm text-gray-400 mt-3">Use this key in your scripts. Keep it secret!</p>
   </div>
 </div>
 
 <script>
+async function getDiscordUser(code) {
+  const proxy = 'https://corsproxy.io/?';
+  const tokenResponse = await fetch(proxy + 'https://discord.com/api/oauth2/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      client_id: '963238863256567848',
+      client_secret: 'YOUR_CLIENT_SECRET_HERE', // REPLACE THIS
+      grant_type: 'authorization_code',
+      code,
+      redirect_uri: 'https://capovh.github.io/CapTcha/dashboard.html',
+      scope: 'identify email guilds'
+    })
+  });
+
+  if (!tokenResponse.ok) return null;
+  const tokenData = await tokenResponse.json();
+
+  const userResponse = await fetch('https://discord.com/api/users/@me', {
+    headers: { Authorization: `Bearer ${tokenData.access_token}` }
+  });
+
+  if (!userResponse.ok) return null;
+  const user = await userResponse.json();
+
+  user.avatarUrl = user.avatar 
+    ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=256`
+    : `https://cdn.discordapp.com/embed/avatars/${user.discriminator % 5}.png`;
+
+  return { ...user, access_token: tokenData.access_token };
+}
+
 function dashboard() {
   return {
-    user: { name: 'Alex Rivera', plan: 'Pro' },
-    stats: { today: 842, success: 99.4, time: 1.1 },
-    apiKey: 'ct_sk_8f9e2a1b3c4d5e6f7g8h9i0j1k2l3m4n',
-    copyKey() { navigator.clipboard.writeText(this.apiKey); alert('Copied!'); },
-    regenerateKey() { if(confirm('Regenerate API key?')) this.apiKey = 'ct_sk_' + Math.random().toString(36).substr(2, 32); },
-    init() {
+    user: { name: 'Loading...', avatar: '', email: '', id: '', plan: 'Free', global_name: '' },
+    stats: { today: 0, success: 0, time: 0 },
+    apiKey: 'ct_sk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+
+    async init() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+
+      if (!code) {
+        alert('Not logged in. Redirecting...');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const discordUser = await getDiscordUser(code);
+      if (!discordUser) {
+        alert('Failed to authenticate with Discord.');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // Save user
+      this.user = {
+        name: discordUser.global_name || discordUser.username,
+        username: discordUser.username,
+        global_name: discordUser.global_name,
+        email: discordUser.email || 'Not provided',
+        id: discordUser.id,
+        avatar: discordUser.avatarUrl,
+        plan: 'Pro' // or fetch from your DB
+      };
+
+      // Fake stats (replace with real API later)
+      this.stats = { today: 842, success: 99.4, time: 1.1 };
+      this.apiKey = 'ct_sk_' + Math.random().toString(36).substr(2, 32);
+
+      // Clean URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+
+      // Init chart
+      this.initChart();
+    },
+
+    initChart() {
       const ctx = document.getElementById('solveChart').getContext('2d');
       new Chart(ctx, {
         type: 'line',
@@ -83,17 +174,45 @@ function dashboard() {
           datasets: [{
             label: 'Solves',
             data: [120, 190, 300, 250, 400, 380, 842],
-            borderColor: '#6366f1',
-            backgroundColor: 'rgba(99, 102, 241, 0.1)',
+            borderColor: '#a78bfa',
+            backgroundColor: 'rgba(167, 139, 250, 0.1)',
             tension: 0.4,
-            fill: true
+            fill: true,
+            pointBackgroundColor: '#a78bfa',
+            pointRadius: 5
           }]
         },
-        options: { responsive: true, plugins: { legend: { display: false } } }
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } },
+            x: { grid: { color: 'rgba(255,255,255,0.05)' } }
+          }
+        }
       });
+    },
+
+    copyKey() {
+      navigator.clipboard.writeText(this.apiKey);
+      alert('API Key copied to clipboard!');
+    },
+
+    regenerateKey() {
+      if (confirm('Regenerate API key? This will break existing scripts.')) {
+        this.apiKey = 'ct_sk_' + Math.random().toString(36).substr(2, 32);
+      }
+    },
+
+    logout() {
+      if (confirm('Logout?')) {
+        localStorage.clear();
+        window.location.href = 'login.html';
+      }
     }
   }
 }
 </script>
+
 </body>
 </html>
