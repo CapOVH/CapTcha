@@ -178,10 +178,11 @@
             this.success = true;
             
             // Optional: redirect only on success
-            setTimeout(() => {
-              window.location.href = 'dashboard.html';
-            }, 1500);
-
+            // Redirect to homepage after login
+        setTimeout(() => {
+        window.location.href = 'index.html';  // or '/CapTcha' if using subfolder
+        }, 1200);
+            
           } catch (err) {
             console.error(err);
             this.error = 
