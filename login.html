@@ -88,13 +88,10 @@
 
 <!-- ERROR HANDLING: Catch Discord errors -->
 <script>
-  // Check for Discord error on load
-  const urlParams = new URLSearchParams(window.location.search);
-  const error = urlParams.get('error');
-  if (error) {
-    alert('Login failed: ' + (urlParams.get('error_description') || error));
-    window.location.href = 'login.html';
-  }
+// SILENT ERROR HANDLING — NO ALERTS
+if (new URLSearchParams(window.location.search).get('error')) {
+  window.location.replace('login.html');
+}
 </script>
 </body>
 </html>
