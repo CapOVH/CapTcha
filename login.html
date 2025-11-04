@@ -6,9 +6,8 @@
   <title>Login – Captcha Finder</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    /* === SAME CSS AS index.html === */
-    :root { --primary: #4a6fa5; --secondary: #6c757d; --success: #28a745; --danger: #dc3545; --light: #f8f9fa; --dark: #343a40; --bg: #f5f7fa; --card-bg: white; --text: #2d3748; --border: #e2e8f0; --header-bg: rgba(255,255,255,0.95); --footer-bg: #343a40; --footer-text: #ccc; --scrollbar-track: #f1f1f1; --scrollbar-thumb: #4a6fa5; --scrollbar-thumb-hover: #3a5a8a; }
-    [data-theme="dark"] { --primary: #6c9eff; --secondary: #a0aec0; --success: #48bb78; --danger: #f56565; --light: #2d3748; --dark: #f7fafc; --bg: #0f172a; --card-bg: #1e293b; --text: #e2e8f0; --border: #334155; --header-bg: rgba(15,23,42,0.95); --footer-bg: #0a0e1a; --footer-text: #94a3b8; --scrollbar-track: #1e293b; --scrollbar-thumb: #6c9eff; --scrollbar-thumb-hover: #5b8cff; }
+    :root { --primary: #4a6fa5; --secondary: #6c757d; --success: #28a745; --danger: #dc3545; --light: #f8f9fa; --dark: #343a40; --bg: #f5f7fa; --card-bg: white; --text: #2d3748; --border: #e2e8f0; --header-bg: rgba(255,255,255,0.95); --footer-bg: #343a40; --footer-text: #ccc; }
+    [data-theme="dark"] { --primary: #6c9eff; --secondary: #a0aec0; --success: #48bb78; --danger: #f56565; --light: #2d3748; --dark: #f7fafc; --bg: #0f172a; --card-bg: #1e293b; --text: #e2e8f0; --border: #334155; --header-bg: rgba(15,23,42,0.95); --footer-bg: #0a0e1a; --footer-text: #94a3b8; }
     * { margin:0; padding:0; box-sizing:border-box; transition:background .3s,color .3s,border-color .3s; }
     body { font-family:'Segoe UI',sans-serif; background:linear-gradient(135deg,var(--bg),color-mix(in srgb,var(--bg),black 20%)); color:var(--text); line-height:1.6; min-height:100vh; display:flex; flex-direction:column; }
     header { background:var(--header-bg); backdrop-filter:blur(10px); box-shadow:0 2px 10px rgba(0,0,0,.1); padding:1rem 0; position:sticky; top:0; z-index:100; }
@@ -58,26 +57,21 @@
 
   <footer>© 2025 Captcha Finder</footer>
 
-  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 
   <script>
-    // PASTE YOUR FIREBASE CONFIG HERE
     const firebaseConfig = {
-  apiKey: "AIzaSyA9sJoZSzbmKJ-7F9jsYVmf7m4cMJ_JUuA",
-  authDomain: "captcha-finder.firebaseapp.com",
-  projectId: "captcha-finder",
-  storageBucket: "captcha-finder.firebasestorage.app",
-  messagingSenderId: "268327722037",
-  appId: "1:268327722037:web:54ba44e1d4ccc2c734e57c",
-  measurementId: "G-LX1WXZFJCW"
-};
-
-    // Initialize Firebase
+      apiKey: "AIzaSyA9sJoZSzbmKJ-7F9jsYVmf7m4cMJ_JUuA",
+      authDomain: "captcha-finder.firebaseapp.com",
+      projectId: "captcha-finder",
+      storageBucket: "captcha-finder.firebasestorage.app",
+      messagingSenderId: "268327722037",
+      appId: "1:268327722037:web:54ba44e1d4ccc2c734e57c",
+      measurementId: "G-LX1WXZFJCW"
+    };
     firebase.initializeApp(firebaseConfig);
 
-    // Theme toggle
     const toggle = document.getElementById('themeToggle'), body = document.body, icon = toggle.querySelector('i');
     const theme = localStorage.getItem('theme') || 'light'; body.dataset.theme = theme;
     icon.classList.toggle('fa-sun', theme === 'dark'); icon.classList.toggle('fa-moon', theme === 'light');
@@ -88,7 +82,6 @@
       icon.classList.toggle('fa-sun', !isDark); icon.classList.toggle('fa-moon', isDark);
     };
 
-    // Login
     document.getElementById('loginForm').onsubmit = e => {
       e.preventDefault();
       const email = document.getElementById('email').value;
@@ -96,22 +89,14 @@
       const msg = document.getElementById('msg');
 
       firebase.auth().signInWithEmailAndPassword(email, password)
-        .then(userCredential => {
-          localStorage.setItem('user', JSON.stringify(userCredential.user));
-          location.href = '/';
-        })
-        .catch(error => {
-          msg.textContent = error.message;
-        });
+        .then(() => location.href = '/')  // Redirect to home
+        .catch(err => msg.textContent = err.message);
     };
 
     // Auto redirect if already logged in
     firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-        localStorage.setItem('user', JSON.stringify(user));
-        if (location.pathname.includes('login.html') || location.pathname.includes('register.html')) {
-          location.href = '/';
-        }
+      if (user && (location.pathname.includes('login.html') || location.pathname.includes('register.html'))) {
+        location.href = '/';
       }
     });
   </script>
