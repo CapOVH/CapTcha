@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Captcha Finder</title>
     <style>
-        /* Modern, clean design */
+        /* === LIGHT MODE (DEFAULT) === */
         :root {
             --primary: #4a6fa5;
             --secondary: #6c757d;
@@ -13,20 +13,49 @@
             --danger: #dc3545;
             --light: #f8f9fa;
             --dark: #343a40;
-            --border-radius: 12px;
-            --box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            --bg: #f5f7fa;
+            --card-bg: white;
+            --text: #2d3748;
+            --border: #e2e8f0;
+            --header-bg: rgba(255, 255, 255, 0.95);
+            --footer-bg: #343a40;
+            --footer-text: #ccc;
+            --scrollbar-track: #f1f1f1;
+            --scrollbar-thumb: #4a6fa5;
+            --scrollbar-thumb-hover: #3a5a8a;
+        }
+
+        /* === DARK MODE === */
+        [data-theme="dark"] {
+            --primary: #6c9eff;
+            --secondary: #a0aec0;
+            --success: #48bb78;
+            --danger: #f56565;
+            --light: #2d3748;
+            --dark: #f7fafc;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #e2e8f0;
+            --border: #334155;
+            --header-bg: rgba(15, 23, 42, 0.95);
+            --footer-bg: #0a0e1a;
+            --footer-text: #94a3b8;
+            --scrollbar-track: #1e293b;
+            --scrollbar-thumb: #6c9eff;
+            --scrollbar-thumb-hover: #5b8cff;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #000000 0%, #0000007e 100%);
-            color: var(--dark);
+            background: linear-gradient(135deg, var(--bg) 0%, color-mix(in srgb, var(--bg), black 20%) 100%);
+            color: var(--text);
             line-height: 1.6;
             min-height: 100vh;
             display: flex;
@@ -34,7 +63,7 @@
         }
 
         header {
-            background: rgba(77, 41, 161, 0.582);
+            background: var(--header-bg);
             backdrop-filter: blur(10px);
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             padding: 1rem 0;
@@ -77,7 +106,7 @@
 
         nav a {
             text-decoration: none;
-            color: var(--dark);
+            color: var(--text);
             font-weight: 500;
             transition: color 0.3s;
             position: relative;
@@ -102,6 +131,29 @@
             width: 100%;
         }
 
+        /* === TOGGLE BUTTON (TOP RIGHT) === */
+        .theme-toggle {
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: 50px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.3rem;
+            color: var(--text);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            border-color: var(--primary);
+        }
+
         main {
             flex: 1;
             padding: 3rem 0;
@@ -110,16 +162,16 @@
         .hero {
             text-align: center;
             padding: 4rem 0;
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: var(--border-radius);
+            background: var(--card-bg);
+            border-radius: 12px;
             margin-bottom: 3rem;
-            box-shadow: var(--box-shadow);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
         }
 
         .hero h1 {
             font-size: 3rem;
             margin-bottom: 1rem;
-            background: linear-gradient(90deg, var(--primary), #7b9cc7);
+            background: linear-gradient(90deg, var(--primary), color-mix(in srgb, var(--primary), white 30%));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -133,10 +185,10 @@
         }
 
         .search-section {
-            background: white;
+            background: var(--card-bg);
             padding: 2.5rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
             margin-bottom: 3rem;
         }
 
@@ -156,16 +208,18 @@
         .input-group input {
             width: 100%;
             padding: 1rem 1rem 1rem 3rem;
-            border: 2px solid #e9ecef;
-            border-radius: var(--border-radius);
+            border: 2px solid var(--border);
+            border-radius: 12px;
             font-size: 1rem;
+            background: var(--card-bg);
+            color: var(--text);
             transition: all 0.3s;
         }
 
         .input-group input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.2);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary), transparent 80%);
         }
 
         .input-group i {
@@ -179,7 +233,7 @@
         .btn {
             padding: 1rem 2rem;
             border: none;
-            border-radius: var(--border-radius);
+            border-radius: 12px;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
@@ -196,9 +250,9 @@
         }
 
         .btn-primary:hover {
-            background: #3a5a8a;
+            background: color-mix(in srgb, var(--primary), black 20%);
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(74, 111, 165, 0.3);
+            box-shadow: 0 8px 25px color-mix(in srgb, var(--primary), transparent 70%);
         }
 
         .btn-outline {
@@ -220,10 +274,10 @@
         }
 
         .feature-card {
-            background: white;
+            background: var(--card-bg);
             padding: 2rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s;
             text-align: center;
         }
@@ -240,7 +294,7 @@
 
         .feature-card h3 {
             margin-bottom: 1rem;
-            color: var(--dark);
+            color: var(--text);
         }
 
         .feature-card p {
@@ -248,17 +302,17 @@
         }
 
         .results {
-            background: white;
+            background: var(--card-bg);
             padding: 2rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
             margin-top: 2rem;
             display: none;
         }
 
         .result-item {
             padding: 1rem;
-            border-bottom: 1px solid #e9ecef;
+            border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -268,18 +322,9 @@
             border-bottom: none;
         }
 
-        .result-url {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .result-url:hover {
-            text-decoration: underline;
-        }
-
         .result-type {
-            background: #e9ecef;
+            background: color-mix(in srgb, var(--primary), transparent 90%);
+            color: var(--primary);
             padding: 0.25rem 0.75rem;
             border-radius: 20px;
             font-size: 0.8rem;
@@ -298,7 +343,7 @@
         }
 
         .spinner {
-            border: 4px solid #f3f3f3;
+            border: 4px solid var(--border);
             border-top: 4px solid var(--primary);
             border-radius: 50%;
             width: 40px;
@@ -313,8 +358,8 @@
         }
 
         footer {
-            background: var(--dark);
-            color: white;
+            background: var(--footer-bg);
+            color: var(--footer-text);
             padding: 3rem 0 1rem;
             margin-top: 3rem;
         }
@@ -328,7 +373,7 @@
 
         .footer-section h3 {
             margin-bottom: 1rem;
-            color: #fff;
+            color: white;
         }
 
         .footer-section ul {
@@ -340,7 +385,7 @@
         }
 
         .footer-section a {
-            color: #ccc;
+            color: var(--footer-text);
             text-decoration: none;
             transition: color 0.3s;
         }
@@ -352,8 +397,8 @@
         .footer-bottom {
             text-align: center;
             padding-top: 2rem;
-            border-top: 1px solid #444;
-            color: #aaa;
+            border-top: 1px solid color-mix(in srgb, white, transparent 90%);
+            color: #94a3b8;
             font-size: 0.9rem;
         }
 
@@ -378,27 +423,31 @@
             .input-group {
                 min-width: 100%;
             }
+
+            .theme-toggle {
+                position: static;
+                margin: 1rem auto;
+            }
         }
 
-        /* Custom scrollbar */
+        /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
         }
 
         ::-webkit-scrollbar-track {
-            background: #f1f1f1;
+            background: var(--scrollbar-track);
         }
 
         ::-webkit-scrollbar-thumb {
-            background: var(--primary);
+            background: var(--scrollbar-thumb);
             border-radius: 4px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #3a5a8a;
+            background: var(--scrollbar-thumb-hover);
         }
     </style>
-    <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -417,6 +466,10 @@
                         <li><a href="#contact">Contact</a></li>
                     </ul>
                 </nav>
+                <!-- Theme Toggle Button -->
+                <div class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </div>
             </div>
         </div>
     </header>
@@ -425,7 +478,7 @@
         <div class="container">
             <section class="hero" id="home">
                 <h1>CapTcha Tool</h1>
-                <p>Quickly bypass any CAPTCHA across websites. Perfect for developers, security researchers, and QA testers.</p>
+                <p>Quickly detect and analyze CAPTCHA implementations across websites. Perfect for developers, security researchers, and QA testers.</p>
                 <div class="search-box">
                     <div class="input-group">
                         <i class="fas fa-globe"></i>
@@ -441,19 +494,19 @@
             <section class="search-section">
                 <h2 style="margin-bottom: 1.5rem; text-align: center;">Advanced Scanning Options</h2>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
-                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--text);">
                         <input type="checkbox" id="scanImages" checked>
                         <span>Scan for image CAPTCHAs</span>
                     </label>
-                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--text);">
                         <input type="checkbox" id="scanRecaptcha" checked>
                         <span>Detect Google reCAPTCHA</span>
                     </label>
-                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--text);">
                         <input type="checkbox" id="scanHcaptcha" checked>
                         <span>Detect hCaptcha</span>
                     </label>
-                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--text);">
                         <input type="checkbox" id="scanCustom" checked>
                         <span>Find custom CAPTCHA scripts</span>
                     </label>
@@ -468,51 +521,37 @@
 
             <section class="results" id="results">
                 <h2 style="margin-bottom: 1.5rem;">Scan Results</h2>
-                <div id="resultsContainer">
-                    <!-- Results will be populated by JavaScript -->
-                </div>
+                <div id="resultsContainer"></div>
             </section>
 
             <section class="features" id="features">
                 <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-bolt"></i>
-                    </div>
+                    <div class="feature-icon"><i class="fas fa-bolt"></i></div>
                     <h3>Lightning Fast</h3>
                     <p>Scan any website in seconds with our optimized detection algorithms.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
+                    <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
                     <h3>Multiple Types</h3>
                     <p>Detect reCAPTCHA, hCaptcha, image-based, text-based, and custom implementations.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-code"></i>
-                    </div>
+                    <div class="feature-icon"><i class="fas fa-code"></i></div>
                     <h3>Developer Friendly</h3>
                     <p>Get detailed information about CAPTCHA scripts, attributes, and implementation.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-chart-bar"></i>
-                    </div>
+                    <div class="feature-icon"><i class="fas fa-chart-bar"></i></div>
                     <h3>Detailed Reports</h3>
                     <p>Export results in JSON or CSV format for further analysis.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-lock"></i>
-                    </div>
+                    <div class="feature-icon"><i class="fas fa-lock"></i></div>
                     <h3>Privacy First</h3>
                     <p>All scans are performed client-side. Your data never leaves your browser.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-mobile-alt"></i>
-                    </div>
+                    <div class="feature-icon"><i class="fas fa-mobile-alt"></i></div>
                     <h3>Fully Responsive</h3>
                     <p>Works perfectly on desktop, tablet, and mobile devices.</p>
                 </div>
@@ -556,50 +595,41 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 Captcha Finder. All rights reserved. | <a href="#" style="color: #ccc;">Privacy Policy</a> | <a href="#" style="color: #ccc;">Terms of Service</a></p>
+                <p>© 2025 Captcha Finder. All rights reserved. | <a href="#" style="color: #94a3b8;">Privacy Policy</a> | <a href="#" style="color: #94a3b8;">Terms of Service</a></p>
             </div>
         </div>
     </footer>
 
     <script>
-        // DOM Elements
+        // === THEME TOGGLE ===
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        const icon = themeToggle.querySelector('i');
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        body.setAttribute('data-theme', savedTheme);
+        icon.classList.toggle('fa-sun', savedTheme === 'dark');
+        icon.classList.toggle('fa-moon', savedTheme === 'light');
+
+        themeToggle.addEventListener('click', () => {
+            const isDark = body.getAttribute('data-theme') === 'dark';
+            const newTheme = isDark ? 'light' : 'dark';
+            
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            icon.classList.toggle('fa-sun', !isDark);
+            icon.classList.toggle('fa-moon', isDark);
+        });
+
+        // === REST OF YOUR JS (unchanged) ===
         const urlInput = document.getElementById('urlInput');
         const scanBtn = document.getElementById('scanBtn');
         const clearBtn = document.getElementById('clearBtn');
         const resultsSection = document.getElementById('results');
         const resultsContainer = document.getElementById('resultsContainer');
 
-        // CAPTCHA detection patterns
-        const captchaPatterns = {
-            recaptcha: [
-                /recaptcha/i,
-                /www.google.com\/recaptcha/i,
-                /grecaptcha/i,
-                /data-sitekey/i,
-                /class="g-recaptcha"/i
-            ],
-            hcaptcha: [
-                /hcaptcha/i,
-                /assets.hcaptcha.com/i,
-                /data-sitekey/i,
-                /class="h-captcha"/i
-            ],
-            imageCaptcha: [
-                /captcha/i,
-                /verify.*image/i,
-                /puzzle/i,
-                /slider/i,
-                /rotate.*image/i
-            ],
-            custom: [
-                /captcha.*\.php/i,
-                /verify.*code/i,
-                /security.*check/i,
-                /bot.*detect/i
-            ]
-        };
-
-        // Simulated scan results (in a real app, this would use a backend or iframe analysis)
         const mockResults = {
             'https://www.google.com/recaptcha': [
                 { type: 'reCAPTCHA v2', url: 'https://www.google.com/recaptcha/api.js', confidence: 100 },
@@ -615,45 +645,27 @@
             ]
         };
 
-        // Scan button click handler
-        scanBtn.addEventListener('click', function() {
+        scanBtn.addEventListener('click', () => {
             const url = urlInput.value.trim();
-            
             if (!url || !isValidURL(url)) {
                 alert('Please enter a valid URL (including https://)');
                 return;
             }
-
             performScan(url);
         });
 
-        // Allow Enter key to trigger scan
-        urlInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                scanBtn.click();
-            }
-        });
-
-        // Clear results
-        clearBtn.addEventListener('click', function() {
+        urlInput.addEventListener('keypress', e => e.key === 'Enter' && scanBtn.click());
+        clearBtn.addEventListener('click', () => {
             resultsSection.style.display = 'none';
             resultsContainer.innerHTML = '';
             urlInput.value = '';
         });
 
-        // Validate URL
         function isValidURL(string) {
-            try {
-                new URL(string);
-                return true;
-            } catch (_) {
-                return false;
-            }
+            try { new URL(string); return true; } catch (_) { return false; }
         }
 
-        // Perform CAPTCHA scan
         function performScan(url) {
-            // Show loading state
             resultsSection.style.display = 'block';
             resultsContainer.innerHTML = `
                 <div class="loading">
@@ -662,12 +674,10 @@
                 </div>
             `;
 
-            // Simulate network delay
             setTimeout(() => {
                 const normalizedUrl = url.toLowerCase();
                 let foundCaptchas = [];
 
-                // Check mock database first
                 for (const [mockUrl, captchas] of Object.entries(mockResults)) {
                     if (normalizedUrl.includes(mockUrl.replace('https://', '').replace('http://', ''))) {
                         foundCaptchas = captchas;
@@ -675,7 +685,6 @@
                     }
                 }
 
-                // If no mock results, simulate detection based on URL patterns
                 if (foundCaptchas.length === 0) {
                     foundCaptchas = simulateDetection(normalizedUrl);
                 }
@@ -684,24 +693,14 @@
             }, 2000);
         }
 
-        // Simulate detection based on URL patterns
         function simulateDetection(url) {
             const results = [];
-
-            if (url.includes('google') || url.includes('recaptcha')) {
-                results.push({ type: 'reCAPTCHA v2/v3', url: 'Detected in page source', confidence: 88 });
-            }
-            if (url.includes('hcaptcha') || url.includes('captcha')) {
-                results.push({ type: 'hCaptcha', url: 'Detected in page source', confidence: 85 });
-            }
-            if (url.includes('login') || url.includes('signup')) {
-                results.push({ type: 'Custom CAPTCHA', url: 'Likely on login form', confidence: 70 });
-            }
-
+            if (url.includes('google') || url.includes('recaptcha')) results.push({ type: 'reCAPTCHA v2/v3', url: 'Detected in page source', confidence: 88 });
+            if (url.includes('hcaptcha') || url.includes('captcha')) results.push({ type: 'hCaptcha', url: 'Detected in page source', confidence: 85 });
+            if (url.includes('login') || url.includes('signup')) results.push({ type: 'Custom CAPTCHA', url: 'Likely on login form', confidence: 70 });
             return results.length > 0 ? results : [];
         }
 
-        // Display scan results
         function displayResults(scannedUrl, captchas) {
             if (captchas.length === 0) {
                 resultsContainer.innerHTML = `
@@ -710,7 +709,7 @@
                         <h3>No CAPTCHAs Found</h3>
                         <p>We couldn't detect any CAPTCHA implementations on <strong>${scannedUrl}</strong>.</p>
                         <p style="margin-top: 1rem; color: #666; font-size: 0.9rem;">
-                            Note: This is a client-side demo. Real detection would require backend analysis or iframe loading.
+                            Note: This is a client-side demo. Real detection would require backend analysis.
                         </p>
                     </div>
                 `;
@@ -718,7 +717,7 @@
             }
 
             let resultsHTML = `
-                <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #e9ecef;">
+                <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border);">
                     <h3 style="color: var(--success); margin-bottom: 0.5rem;">
                         <i class="fas fa-check-circle"></i> ${captchas.length} CAPTCHA(s) Found
                     </h3>
@@ -727,18 +726,13 @@
             `;
 
             captchas.forEach(captcha => {
-                const typeClass = captcha.type.toLowerCase().includes('recaptcha') ? 'recaptcha' : 
-                                captcha.type.toLowerCase().includes('hcaptcha') ? 'hcaptcha' : 'custom';
-                
-                const typeColor = typeClass === 'recaptcha' ? '#4285f4' :
-                                typeClass === 'hcaptcha' ? '#344e86' : '#f39c12';
+                const typeColor = captcha.type.toLowerCase().includes('recaptcha') ? '#4285f4' :
+                                captcha.type.toLowerCase().includes('hcaptcha') ? '#344e86' : '#f39c12';
 
                 resultsHTML += `
                     <div class="result-item">
                         <div>
-                            <div style="font-weight: 600; margin-bottom: 0.25rem;">
-                                ${captcha.type}
-                            </div>
+                            <div style="font-weight: 600; margin-bottom: 0.25rem;">${captcha.type}</div>
                             <div style="font-size: 0.9rem; color: var(--secondary);">
                                 <i class="fas fa-code"></i> ${captcha.url}
                             </div>
@@ -752,7 +746,6 @@
                 `;
             });
 
-            // Add export buttons
             resultsHTML += `
                 <div style="margin-top: 2rem; text-align: center; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
                     <button class="btn btn-outline" onclick="exportResults('json', '${scannedUrl}', ${JSON.stringify(captchas)})">
@@ -770,7 +763,6 @@
             resultsContainer.innerHTML = resultsHTML;
         }
 
-        // Export functions
         window.exportResults = function(format, url, captchas) {
             captchas = JSON.parse(captchas);
             if (format === 'json') {
@@ -778,9 +770,7 @@
                 downloadFile(data, 'captcha-results.json', 'application/json');
             } else if (format === 'csv') {
                 let csv = 'Type,Location,Confidence,Scanned URL,Timestamp\n';
-                captchas.forEach(c => {
-                    csv += `"${c.type}","${c.url}","${c.confidence}%","${url}","${new Date().toISOString()}"\n`;
-                });
+                captchas.forEach(c => csv += `"${c.type}","${c.url}","${c.confidence}%","${url}","${new Date().toISOString()}"\n`);
                 downloadFile(csv, 'captcha-results.csv', 'text/csv');
             }
         };
@@ -788,45 +778,32 @@
         window.copyResults = function(captchas) {
             captchas = JSON.parse(captchas);
             const text = captchas.map(c => `${c.type}: ${c.url} (${c.confidence}% confidence)`).join('\n');
-            navigator.clipboard.writeText(text).then(() => {
-                alert('Results copied to clipboard!');
-            });
+            navigator.clipboard.writeText(text).then(() => alert('Results copied to clipboard!'));
         };
 
         function downloadFile(content, filename, type) {
             const blob = new Blob([content], { type });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            a.click();
+            a.href = url; a.download = filename; a.click();
             URL.revokeObjectURL(url);
         }
 
-        // Smooth scrolling for navigation links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
+            anchor.addEventListener('click', e => {
                 e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
+                const target = document.querySelector(anchor.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             });
         });
 
-        // Add some example URLs on page load
-        window.addEventListener('load', function() {
+        window.addEventListener('load', () => {
             const examples = [
                 'https://www.google.com/recaptcha/about/',
                 'https://dashboard.hcaptcha.com/signup',
                 'https://example-bank.com/login'
             ];
-            
             urlInput.placeholder = `Try: ${examples[0]}`;
-            
             let i = 0;
             setInterval(() => {
                 urlInput.placeholder = `Try: ${examples[i % examples.length]}`;
