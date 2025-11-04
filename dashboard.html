@@ -38,11 +38,11 @@
 
 <div class="pt-24 container mx-auto px-4 max-w-6xl">
 
-  <!-- User Profile -->
+  <!-- Profile -->
   <div class="bg-white/5 glass rounded-2xl p-6 mb-8 text-center" x-show="user.id">
     <img :src="user.avatar" alt="Avatar" class="w-24 h-24 rounded-full mx-auto ring-4 ring-indigo-500 shadow-xl avatar mb-4">
     <h1 class="text-3xl font-bold" x-text="user.global_name || user.username"></h1>
-    <p class="text-gray-400" x-text="user.email || 'Email hidden'"></p>
+    <p class="text-gray-400" x-text="user.email || 'Hidden'"></p>
     <p class="text-xs text-gray-500 mt-1">ID: <span x-text="user.id"></span></p>
   </div>
 
@@ -96,6 +96,7 @@ function dashboard() {
     apiKey: 'ct_sk_8f9e2a1b3c4d5e6f7g8h9i0j1k2l3m4n',
 
     init() {
+      // === NO ALERTS ALLOWED. EVER. ===
       const hash = window.location.hash.substring(1);
       if (!hash) return this.redirect();
 
@@ -104,9 +105,12 @@ function dashboard() {
       if (!token) return this.redirect();
 
       fetch('https://discord.com/api/users/@me', {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { 'Authorization': `Bearer ${token}` }
       })
-      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(r => {
+        if (!r.ok) return this.redirect();  // Silent
+        return r.json();
+      })
       .then(data => {
         this.user = {
           id: data.id,
@@ -121,11 +125,12 @@ function dashboard() {
         history.replaceState({}, '', '/CapTcha/dashboard.html');
         this.initChart();
       })
-      .catch(() => this.redirect());
+      .catch(() => this.redirect());  // Silent
     },
 
     redirect() {
-      window.location.href = 'login.html';
+      // === BLACKLISTED: NO ALERTS, NO CONSOLE, NO CRASH ===
+      window.location.replace('login.html');  // Clean redirect
     },
 
     initChart() {
@@ -147,9 +152,26 @@ function dashboard() {
       });
     },
 
-    copyKey() { navigator.clipboard.writeText(this.apiKey); alert('Copied!'); },
-    regenerateKey() { if (confirm('Regenerate?')) this.apiKey = 'ct_sk_' + Math.random().toString(36).substr(2, 32); },
-    logout() { if (confirm('Logout?')) window.location.href = 'login.html'; }
+    copyKey() {
+      navigator.clipboard.writeText(this.apiKey).then(() => {
+        // Optional: show toast instead of alert
+        const toast = document.createElement('div');
+        toast.textContent = 'Copied!';
+        toast.className = 'fixed bottom-4 right-4 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2000);
+      });
+    },
+
+    regenerateKey() {
+      if (confirm('Regenerate API key?')) {
+        this.apiKey = 'ct_sk_' + Math.random().toString(36).substr(2, 32);
+      }
+    },
+
+    logout() {
+      if (confirm('Logout?')) window.location.href = 'login.html';
+    }
   }
 }
 </script>
