@@ -38,22 +38,18 @@
 
 <div class="pt-24 container mx-auto px-4 max-w-6xl">
 
-  <!-- User Profile Card -->
-  <div class="bg-white/5 glass rounded-2xl p-6 mb-8" x-show="user.id">
-    <div class="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
-      <img :src="user.avatar" alt="Avatar" class="w-24 h-24 rounded-full ring-4 ring-indigo-500 shadow-xl avatar">
-      <div class="text-center md:text-left">
-        <h1 class="text-3xl font-bold" x-text="user.global_name || user.username"></h1>
-        <p class="text-gray-400" x-text="user.email || 'Email hidden'"></p>
-        <p class="text-xs text-gray-500 mt-1">ID: <span x-text="user.id"></span></p>
-      </div>
-    </div>
+  <!-- User Profile -->
+  <div class="bg-white/5 glass rounded-2xl p-6 mb-8 text-center" x-show="user.id">
+    <img :src="user.avatar" alt="Avatar" class="w-24 h-24 rounded-full mx-auto ring-4 ring-indigo-500 shadow-xl avatar mb-4">
+    <h1 class="text-3xl font-bold" x-text="user.global_name || user.username"></h1>
+    <p class="text-gray-400" x-text="user.email || 'Email hidden'"></p>
+    <p class="text-xs text-gray-500 mt-1">ID: <span x-text="user.id"></span></p>
   </div>
 
-  <!-- Loading State -->
+  <!-- Loading -->
   <div class="text-center py-20" x-show="!user.id">
     <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-    <p class="mt-4 text-gray-400">Authenticating with Discord...</p>
+    <p class="mt-4 text-gray-400">Signing you in...</p>
   </div>
 
   <!-- Stats -->
@@ -100,6 +96,7 @@ function dashboard() {
     apiKey: 'ct_sk_8f9e2a1b3c4d5e6f7g8h9i0j1k2l3m4n',
 
     init() {
+      // Read token from URL hash
       const hash = window.location.hash.substring(1);
       if (!hash) {
         this.redirectToLogin();
@@ -108,18 +105,18 @@ function dashboard() {
 
       const params = new URLSearchParams(hash);
       const access_token = params.get('access_token');
-      const token_type = params.get('token_type');
+      const token_type = params.get('token_type') || 'Bearer';
 
       if (!access_token) {
         this.redirectToLogin();
         return;
       }
 
-      // Fetch user from Discord
+      // Fetch user
       fetch('https://discord.com/api/users/@me', {
-        headers: { Authorization: `${token_type} ${access_token}` }
+        headers: { 'Authorization': `${token_type} ${access_token}` }
       })
-      .then(res => res.ok ? res.json() : Promise.reject(res.status))
+      .then(r => r.ok ? r.json() : Promise.reject('Invalid token'))
       .then(data => {
         this.user = {
           id: data.id,
@@ -134,9 +131,8 @@ function dashboard() {
         window.history.replaceState({}, '', '/CapTcha/dashboard.html');
         this.initChart();
       })
-      .catch(err => {
-        console.error('Discord fetch failed:', err);
-        alert('Failed to load user. Try logging in again.');
+      .catch(() => {
+        alert('Login failed. Redirecting...');
         this.redirectToLogin();
       });
     },
@@ -146,7 +142,7 @@ function dashboard() {
     },
 
     initChart() {
-      const ctx = document.getElementById('solveChart')?.getContext('2d');
+      const ctx = document.getElementById('solveChart');
       if (!ctx) return;
       new Chart(ctx, {
         type: 'line',
@@ -156,16 +152,12 @@ function dashboard() {
             label: 'Solves',
             data: [120, 190, 300, 250, 400, 380, 842],
             borderColor: '#a78bfa',
-            backgroundColor: 'rgba(167, 139, 250, 0.1)',
+            backgroundColor: 'rgba(167, 139,  praises250, 0.1)',
             tension: 0.4,
             fill: true
           }]
         },
-        options: {
-          responsive: true,
-          plugins: { legend: { display: false } },
-          scales: { y: { beginAtZero: true }, x: { grid: { display: false } } }
-        }
+        options: { responsive: true, plugins: { legend: { display: false } } }
       });
     },
 
@@ -175,7 +167,7 @@ function dashboard() {
     },
 
     regenerateKey() {
-      if (confirm('Regenerate API key?')) {
+      if (confirm('Regenerate?')) {
         this.apiKey = 'ct_sk_' + Math.random().toString(36).substr(2, 32);
       }
     },
@@ -186,6 +178,5 @@ function dashboard() {
   }
 }
 </script>
-
 </body>
 </html>
