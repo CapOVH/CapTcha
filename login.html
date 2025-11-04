@@ -5,37 +5,86 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login – CapTcha Tool</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     body { font-family: 'Inter', sans-serif; }
-    .glass-card { background: rgba(30, 35, 55, 0.65); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.12); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4); }
-    .discord-btn { background: #5865F2; transition: all 0.3s ease; }
-    .discord-btn:hover { background: #4752C4; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(88, 101, 242, 0.3); }
-    .bird-svg { animation: float 6s ease-in-out infinite; }
-    @keyframes float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-10px) rotate(2deg); } }
+    .glass-card { 
+      background: rgba(30, 35, 55, 0.65); 
+      backdrop-filter: blur(16px); 
+      -webkit-backdrop-filter: blur(16px); 
+      border: 1px solid rgba(255, 255, 255, 0.12); 
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4); 
+    }
+    .dark .glass-card {
+      background: rgba(15, 15, 26, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .discord-btn { 
+      background: #5865F2; 
+      transition: all 0.3s ease; 
+    }
+    .discord-btn:hover { 
+      background: #4752C4; 
+      transform: translateY(-2px); 
+      box-shadow: 0 10px 20px rgba(88, 101, 242, 0.3); 
+    }
+    .bird-svg { 
+      animation: float 6s ease-in-out infinite; 
+    }
+    @keyframes float { 
+      0%, 100% { transform: translateY(0) rotate(0deg); } 
+      50% { transform: translateY(-10px) rotate(2deg); } 
+    }
+    .back-btn {
+      transition: all 0.3s ease;
+    }
+    .back-btn:hover {
+      transform: translateX(-5px);
+    }
   </style>
 </head>
-<body class="bg-gradient-to-br from-gray-900 via-indigo-950 to-purple-950 min-h-screen flex items-center justify-center p-4">
+<body class="bg-gradient-to-br from-gray-900 via-indigo-950 to-purple-950 min-h-screen flex items-center justify-center p-4" x-data="loginApp()">
+
+<!-- Back to Home Button -->
+<div class="fixed top-6 left-6 z-50">
+  <a href="index.html" class="back-btn flex items-center gap-2 px-4 py-2 glass-card rounded-lg text-white hover:bg-white/10 transition">
+    <i class="fas fa-arrow-left"></i>
+    <span class="hidden sm:inline">Back to Home</span>
+  </a>
+</div>
+
+<!-- Dark Mode Toggle -->
+<div class="fixed top-6 right-6 z-50">
+  <button @click="dark = !dark" class="p-3 glass-card rounded-lg text-white hover:bg-white/10 transition">
+    <i x-show="!dark" class="fas fa-moon text-lg"></i>
+    <i x-show="dark" class="fas fa-sun text-lg text-yellow-400"></i>
+  </button>
+</div>
+
 <div class="w-full max-w-5xl">
   <div class="glass-card rounded-3xl overflow-hidden">
     <div class="grid md:grid-cols-2 gap-0">
       <!-- Left Panel -->
       <div class="p-8 md:p-12 flex flex-col justify-between text-white">
         <div>
-          <h1 class="text-2xl md:text-3xl font-bold mb-3">CapTcha Tool</h1>
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold">CT</div>
+            <h1 class="text-2xl md:text-3xl font-bold">CapTcha Tool</h1>
+          </div>
           <p class="text-gray-300 text-sm md:text-base mb-8 leading-relaxed">
             Login with the easy built-in Discord authentication to access your personal dashboard!
           </p>
           <ul class="space-y-3">
             <li class="flex items-center text-sm md:text-base">
-              <i class="fas fa-check-circle text-green-400 mr-3"></i> <span>Fast</span>
+              <i class="fas fa-check-circle text-green-400 mr-3"></i> <span>Fast & Secure</span>
             </li>
             <li class="flex items-center text-sm md:text-base">
-              <i class="fas fa-check-circle text-green-400 mr-3"></i> <span>Simple</span>
+              <i class="fas fa-check-circle text-green-400 mr-3"></i> <span>Simple Authentication</span>
             </li>
             <li class="flex items-center text-sm md:text-base">
-              <i class="fas fa-check-circle text-green-400 mr-3"></i> <span>Responsive</span>
+              <i class="fas fa-check-circle text-green-400 mr-3"></i> <span>Instant Access</span>
             </li>
           </ul>
         </div>
@@ -76,13 +125,34 @@
         </p>
         <a href="https://discord.com/oauth2/authorize?client_id=963238863256567848&response_type=code&redirect_uri=https%3A%2F%2Fcapovh.github.io%2FCapTcha%2F&scope=identify+guilds"
            class="discord-btn text-white font-semibold px-8 py-3 rounded-full flex items-center gap-3 text-lg w-fit">
-          <i class="fab fa-discord"></i>
+          <i class="fab fa-discord text-xl"></i>
           Sign in with Discord
           <i class="fas fa-arrow-right ml-1"></i>
         </a>
+        <p class="text-gray-500 text-xs mt-6">
+          Don't have an account? <a href="register.html" class="text-indigo-400 hover:text-indigo-300 transition">Register here</a>
+        </p>
       </div>
     </div>
   </div>
 </div>
+
+<script>
+  function loginApp() {
+    return {
+      dark: localStorage.getItem('dark') === 'true',
+      init() {
+        this.$watch('dark', val => {
+          document.documentElement.classList.toggle('dark', val);
+          localStorage.setItem('dark', val);
+        });
+        if (localStorage.getItem('dark') === null && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          this.dark = true;
+        }
+        document.documentElement.classList.toggle('dark', this.dark);
+      }
+    };
+  }
+</script>
 </body>
 </html>
