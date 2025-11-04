@@ -97,47 +97,34 @@ function dashboard() {
 
     init() {
       const hash = window.location.hash.substring(1);
-      if (!hash) {
-        this.redirectToLogin();
-        return;
-      }
+      if (!hash) return this.redirect();
 
       const params = new URLSearchParams(hash);
-      const access_token = params.get('access_token');
-      const token_type = params.get('token_type') || 'Bearer';
-
-      if (!access_token) {
-        this.redirectToLogin();
-        return;
-      }
+      const token = params.get('access_token');
+      if (!token) return this.redirect();
 
       fetch('https://discord.com/api/users/@me', {
-        headers: { 'Authorization': `${token_type} ${access_token}` }
+        headers: { Authorization: `Bearer ${token}` }
       })
-      .then(r => {
-        if (!r.ok) throw new Error();
-        return r.json();
-      })
+      .then(r => r.ok ? r.json() : Promise.reject())
       .then(data => {
         this.user = {
           id: data.id,
           username: data.username,
           global_name: data.global_name || data.username,
-          email: data.email || 'Not shared',
+          email: data.email || 'Hidden',
           avatar: data.avatar
             ? `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png?size=256`
             : `https://cdn.discordapp.com/embed/avatars/${(data.discriminator || 0) % 5}.png`
         };
         this.apiKey = 'ct_sk_' + Math.random().toString(36).substr(2, 32);
-        window.history.replaceState({}, '', '/CapTcha/dashboard.html');
+        history.replaceState({}, '', '/CapTcha/dashboard.html');
         this.initChart();
       })
-      .catch(() => {
-        this.redirectToLogin();
-      });
+      .catch(() => this.redirect());
     },
 
-    redirectToLogin() {
+    redirect() {
       window.location.href = 'login.html';
     },
 
@@ -149,7 +136,6 @@ function dashboard() {
         data: {
           labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
           datasets: [{
-            label: 'Solves',
             data: [120, 190, 300, 250, 400, 380, 842],
             borderColor: '#a78bfa',
             backgroundColor: 'rgba(167, 139, 250, 0.1)',
@@ -161,18 +147,9 @@ function dashboard() {
       });
     },
 
-    copyKey() {
-      navigator.clipboard.writeText(this.apiKey);
-      alert('Copied!');
-    },
-
-    regenerateKey() {
-      if (confirm('Regenerate?')) this.apiKey = 'ct_sk_' + Math.random().toString(36).substr(2, 32);
-    },
-
-    logout() {
-      if (confirm('Logout?')) window.location.href = 'login.html';
-    }
+    copyKey() { navigator.clipboard.writeText(this.apiKey); alert('Copied!'); },
+    regenerateKey() { if (confirm('Regenerate?')) this.apiKey = 'ct_sk_' + Math.random().toString(36).substr(2, 32); },
+    logout() { if (confirm('Logout?')) window.location.href = 'login.html'; }
   }
 }
 </script>
