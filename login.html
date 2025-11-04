@@ -4,148 +4,65 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login – CapTcha Tool</title>
-
-  <!-- Tailwind + Alpine -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-
-  <!-- Fonts & Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-
   <style>
     body { font-family: 'Inter', sans-serif; }
-    .glass {
-      background: rgba(255,255,255,0.12);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 1px solid rgba(255,255,255,0.2);
-    }
-    .dark .glass {
-      background: rgba(15,15,26,0.6);
-      border: 1px solid rgba(255,255,255,0.08);
-    }
+    .glass { background: rgba(255,255,255,0.12); backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.2); }
+    .dark .glass { background: rgba(15,15,26,0.6); border: 1px solid rgba(255,255,255,0.08); }
     .gradient-bg { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); }
-    .input-focus:focus {
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
-      outline: none;
-    }
+    .input-focus:focus { box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3); outline: none; }
   </style>
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen flex items-center justify-center p-4" x-data="loginApp()">
-
-  <!-- Background -->
+<body class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4" x-data="loginApp()">
   <div class="fixed inset-0 gradient-bg opacity-90"></div>
-
-  <!-- Login Card -->
   <div class="relative z-10 w-full max-w-md">
     <div class="glass rounded-3xl shadow-2xl p-8 md:p-10">
-
-      <!-- Logo -->
       <div class="flex justify-center mb-8">
-        <div class="w-16 h-16 gradient-bg rounded-xl flex items-center justify-center text-white text-2xl font-bold shadow-lg">
-          CT
-        </div>
+        <div class="w-16 h-16 gradient-bg rounded-xl flex items-center justify-center text-white text-2xl font-bold shadow-lg">CT</div>
       </div>
-
       <h1 class="text-3xl font-bold text-center text-white mb-2">Welcome Back</h1>
       <p class="text-center text-white/70 mb-8">Sign in to your CapTcha Tool account</p>
 
-      <!-- Form -->
       <form @submit.prevent="login" class="space-y-6">
-        <!-- Email -->
         <div>
-          <label class="block text-sm font-medium text-white/90 mb-2">
-            <i class="fas fa-envelope mr-2"></i>Email
-          </label>
-          <input 
-            type="email" 
-            x-model="email"
-            required
-            class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 input-focus transition"
-            placeholder="you@example.com"
-          />
+          <label class="block text-sm font-medium text-white/90 mb-2">Email</label>
+          <input type="email" x-model="email" required autocomplete="email" class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 input-focus" placeholder="you@example.com" />
         </div>
-
-        <!-- Password -->
         <div>
-          <label class="block text-sm font-medium text-white/90 mb-2">
-            <i class="fas fa-lock mr-2"></i>Password
-          </label>
+          <label class="block text-sm font-medium text-white/90 mb-2">Password</label>
           <div class="relative">
-            <input 
-              :type="showPassword ? 'text' : 'password'"
-              x-model="password"
-              required
-              class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 input-focus transition pr-12"
-              placeholder="••••••••"
-            />
-            <button 
-              type="button" 
-              @click="showPassword = !showPassword"
-              class="absolute inset-y-0 right-0 pr-3 flex items-center text-white/60 hover:text-white"
-            >
-              <i x-show="!showPassword" class="fas fa-eye-slash"></i>
-              <i x-show="showPassword" class="fas fa-eye"></i>
+            <input :type="show ? 'text' : 'password'" x-model="password" required autocomplete="current-password" class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 input-focus pr-12" placeholder="••••••••" />
+            <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 pr-3 flex items-center text-white/60 hover:text-white">
+              <i x-show="!show" class="fas fa-eye-slash"></i>
+              <i x-show="show" class="fas fa-eye"></i>
             </button>
           </div>
         </div>
-
-        <!-- Error -->
-        <div x-show="error" class="bg-red-500/20 border border-red-500/50 text-red-300 text-sm p-3 rounded-lg text-center" x-text="error"></div>
-
-        <!-- Success -->
-        <div x-show="success" class="bg-green-500/20 border border-green-500/50 text-green-300 text-sm p-3 rounded-lg text-center">
-          Login successful! Redirecting...
-        </div>
-
-        <!-- Submit -->
-        <button 
-          type="submit"
-          :disabled="loading"
-          class="w-full py-3 px-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center justify-center space-x-2 disabled:opacity-70 disabled:cursor-not-allowed"
-        >
+        <div x-show="error" class="bg-red-500/20 text-red-300 p-3 rounded-lg text-center" x-text="error"></div>
+        <div x-show="success" class="bg-green-500/20 text-green-300 p-3 rounded-lg text-center animate-pulse">Login successful! Redirecting...</div>
+        <button :disabled="loading" class="w-full py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold rounded-xl hover:shadow-lg disabled:opacity-70 flex items-center justify-center">
           <span x-show="!loading">Sign In</span>
-          <svg x-show="loading" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
+          <svg x-show="loading" class="animate-spin h-5 w-5" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
         </button>
       </form>
 
-      <!-- Links -->
-      <div class="mt-6 text-center text-sm text-white/70 space-y-2">
-        <p>
-          Don't have an account? 
-          <a href="register.html" class="text-indigo-300 hover:text-indigo-200 font-medium">Register</a>
-        </p>
-        <p>
-          <a href="#" class="text-indigo-300 hover:text-indigo-200">Forgot password?</a>
-        </p>
-      </div>
+      <p class="mt-6 text-center text-sm text-white/70">
+        Don't have an account? <a href="register.html" class="text-indigo-300 hover:text-indigo-200">Register</a>
+      </p>
 
-      <!-- Dark Mode Toggle -->
-      <button 
-        @click="$dispatch('toggle-dark')"
-        class="absolute top-4 right-4 p-2 rounded-lg bg-white/10 hover:bg-white/20 transition text-white"
-      >
+      <button @click="$dispatch('toggle-dark')" class="absolute top-4 right-4 p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white">
         <i x-show="!$store.dark" class="fas fa-moon"></i>
         <i x-show="$store.dark" class="fas fa-sun text-yellow-400"></i>
       </button>
     </div>
-
-    <p class="mt-6 text-center text-white/50 text-xs">
-      © 2025 CapTcha Tool. Secured with Firebase Auth.
-    </p>
   </div>
 
-  <!-- Alpine + Firebase Logic -->
   <script>
-    // Firebase Config (must match index.html)
     const firebaseConfig = {
       apiKey: "AIzaSyA9sJoZSzbmKJ-7F9jsYVmf7m4cMJ_JUuA",
       authDomain: "captcha-finder.firebaseapp.com",
@@ -155,64 +72,37 @@
       appId: "1:268327722037:web:54ba44e1d4ccc2c734e57c",
       measurementId: "G-LX1WXZFJCW"
     };
-
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
     function loginApp() {
       return {
-        email: '',
-        password: '',
-        showPassword: false,
-        loading: false,
-        error: '',
-        success: false,
-
+        email: '', password: '', show: false, loading: false, error: '', success: false,
         async login() {
-          this.loading = true;
-          this.error = '';
-          this.success = false;
-
+          this.loading = true; this.error = ''; this.success = false;
           try {
-            const userCredential = await auth.signInWithEmailAndPassword(this.email, this.password);
+            await auth.signInWithEmailAndPassword(this.email, this.password);
             this.success = true;
-            
-            // Optional: redirect only on success
-            // Redirect to homepage after login
-        setTimeout(() => {
-        window.location.href = 'index.html';  // or '/CapTcha' if using subfolder
-        }, 1200);
-            
+            setTimeout(() => window.location.href = 'index.html', 1200);  // ← GOES TO index.html
           } catch (err) {
-            console.error(err);
             this.error = 
-              err.code === 'auth/user-not-found' ? 'No account found with this email.' :
+              err.code === 'auth/user-not-found' ? 'No account found.' :
               err.code === 'auth/wrong-password' ? 'Incorrect password.' :
-              err.code === 'auth/invalid-email' ? 'Please enter a valid email.' :
-              'Login failed. Please try again.';
-          } finally {
-            this.loading = false;
-          }
+              err.code === 'auth/invalid-email' ? 'Invalid email.' :
+              'Login failed.';
+          } finally { this.loading = false; }
         }
       };
     }
 
-    // Dark Mode Store (shared with index.html)
     document.addEventListener('alpine:init', () => {
       Alpine.store('dark', localStorage.getItem('dark') === 'true');
-      
       Alpine.effect(() => {
-        const dark = Alpine.store('dark');
-        document.documentElement.classList.toggle('dark', dark);
-        localStorage.setItem('dark', dark);
+        document.documentElement.classList.toggle('dark', Alpine.store('dark'));
+        localStorage.setItem('dark', Alpine.store('dark'));
       });
     });
-
-    document.addEventListener('toggle-dark', () => {
-      Alpine.store('dark', !Alpine.store('dark'));
-    });
-
-    // NO auto-redirect on page load
+    document.addEventListener('toggle-dark', () => Alpine.store('dark', !Alpine.store('dark')));
   </script>
 </body>
 </html>
