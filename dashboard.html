@@ -88,138 +88,54 @@
 </div>
 
 <script>
-async function getDiscordUser(code) {
-  if (!code) {
-    console.error('No code in URL');
-    return null;
-  }
-
-  // REPLACE WITH YOUR REAL CLIENT SECRET (from Discord Developer Portal)
-  const CLIENT_SECRET = 'REPLACE_WITH_YOUR_SECRET_HERE';  // CRITICAL: GET FROM https://discord.com/developers/applications
-
-  const client_id = '963238863256567848';
-  const redirect_uri = 'https://capovh.github.io/CapTcha/dashboard.html';
-
-  // Try multiple proxies for reliability
-  const proxies = [
-    'https://corsproxy.io/?',
-    'https://api.allorigins.win/raw?url='
-  ];
-
-  let tokenData = null;
-  for (const proxy of proxies) {
-    try {
-      const tokenResponse = await fetch(proxy + encodeURIComponent('https://discord.com/api/oauth2/token'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          client_id,
-          client_secret: CLIENT_SECRET,
-          grant_type: 'authorization_code',
-          code,
-          redirect_uri,
-          scope: 'identify email guilds'
-        })
-      });
-
-      if (tokenResponse.ok) {
-        tokenData = await tokenResponse.json();
-        console.log('Token received:', tokenData);
-        break;
-      } else {
-        console.warn(`Proxy ${proxy} failed: ${tokenResponse.status}`);
-      }
-    } catch (err) {
-      console.warn(`Proxy ${proxy} error:`, err);
-    }
-  }
-
-  if (!tokenData) {
-    console.error('All proxies failed. Check client_secret and network.');
-    return null;
-  }
-
-  try {
-    const userResponse = await fetch('https://discord.com/api/users/@me', {
-      headers: { Authorization: `Bearer ${tokenData.access_token}` }
-    });
-
-    if (!userResponse.ok) {
-      console.error('User fetch failed:', userResponse.status, await userResponse.text());
-      return null;
-    }
-
-    const user = await userResponse.json();
-    user.avatarUrl = user.avatar 
-      ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=256`
-      : `https://cdn.discordapp.com/embed/avatars/${user.discriminator % 5}.png`;
-
-    return { ...user, access_token: tokenData.access_token };
-  } catch (err) {
-    console.error('User fetch error:', err);
-    return null;
-  }
-}
-
 function dashboard() {
   return {
-    user: { name: 'Loading...', avatar: '/assets/logo.svg', email: '', id: '', plan: 'Free', global_name: '' },
+    user: { name: 'Loading...', avatar: '', email: '', id: '', plan: 'Free', global_name: '' },
     stats: { today: 842, success: 99.4, time: 1.1 },
     apiKey: 'ct_sk_8f9e2a1b3c4d5e6f7g8h9i0j1k2l3m4n',
 
     async init() {
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get('code');
-      const error = urlParams.get('error');  // Discord error param
-
-      if (error) {
-        console.error('Discord error:', error);
-        alert(`Login failed: ${error}. Check app permissions.`);
-        window.location.href = 'login.html';
-        return;
-      }
 
       if (!code) {
-        console.error('No auth code. Redirecting to login.');
+        alert('Please log in first.');
         window.location.href = 'login.html';
         return;
       }
 
-      console.log('Auth code received:', code);
+      // CALL YOUR VERCEL PROXY
+      const proxyUrl = 'https://your-project.vercel.app/api/discord'; // CHANGE THIS
+      const res = await fetch(`${proxyUrl}?code=${code}`);
 
-      const discordUser = await getDiscordUser(code);
-      if (!discordUser) {
-        console.error('Auth failed - check client_secret and redirect_uri.');
-        alert('Authentication failed. Please try logging in again.');
+      if (!res.ok) {
+        const err = await res.text();
+        console.error('Proxy error:', err);
+        alert('Login failed. Try again.');
         window.location.href = 'login.html';
         return;
       }
+
+      const discordUser = await res.json();
 
       this.user = {
         name: discordUser.global_name || discordUser.username,
         username: discordUser.username,
         global_name: discordUser.global_name,
-        email: discordUser.email || 'Email not available',
+        email: discordUser.email || 'Hidden',
         id: discordUser.id,
-        avatar: discordUser.avatarUrl,
-        plan: 'Premium'  // Fetch from your DB or SellAuth
+        avatar: discordUser.avatar,
+        plan: 'Pro'
       };
 
-      // Fake stats (REPLACE with real API)
-      this.stats = { today: 842, success: 99.4, time: 1.1 };
       this.apiKey = 'ct_sk_' + Math.random().toString(36).substr(2, 32);
-
-      // Clean URL (remove ?code=...)
-      window.history.replaceState({}, '', window.location.pathname);
-
-      // Init chart
+      window.history.replaceState({}, '', '/CapTcha/dashboard.html');
       this.initChart();
     },
 
     initChart() {
       const ctx = document.getElementById('solveChart')?.getContext('2d');
       if (!ctx) return;
-
       new Chart(ctx, {
         type: 'line',
         data: {
@@ -236,29 +152,24 @@ function dashboard() {
         options: {
           responsive: true,
           plugins: { legend: { display: false } },
-          scales: {
-            y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } },
-            x: { grid: { color: 'rgba(255,255,255,0.05)' } }
-          }
+          scales: { y: { beginAtZero: true }, x: { grid: { display: false } } }
         }
       });
     },
 
     copyKey() {
-      navigator.clipboard.writeText(this.apiKey).then(() => alert('API Key copied!'));
+      navigator.clipboard.writeText(this.apiKey);
+      alert('Copied!');
     },
 
     regenerateKey() {
-      if (confirm('Regenerate API key? This will invalidate current keys.')) {
+      if (confirm('Regenerate?')) {
         this.apiKey = 'ct_sk_' + Math.random().toString(36).substr(2, 32);
       }
     },
 
     logout() {
-      if (confirm('Logout?')) {
-        localStorage.clear();
-        window.location.href = 'login.html';
-      }
+      if (confirm('Logout?')) window.location.href = 'login.html';
     }
   }
 }
