@@ -63,6 +63,14 @@
 
     <!-- Desktop Menu -->
     <div class="hidden md:flex items-center space-x-6">
+
+      <!-- Dark Mode Toggle (First) -->
+      <button @click="dark = !dark" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+        <i x-show="!dark" class="fas fa-moon text-lg"></i>
+        <i x-show="dark" class="fas fa-sun text-lg text-yellow-400"></i>
+      </button>
+
+      <!-- Links -->
       <a href="#features" class="hover:text-indigo-400 transition">Features</a>
       <a href="#pricing" class="hover:text-indigo-400 transition">Pricing</a>
 
@@ -72,7 +80,7 @@
         <a href="register.html" class="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg hover:shadow-lg transition">Register</a>
       </template>
 
-      <!-- Logged In -->
+      <!-- Logged In: Dashboard + Logout -->
       <template x-if="user">
         <a href="dashboard.html" class="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg hover:shadow-lg transition">
           Dashboard
@@ -82,11 +90,6 @@
         </button>
       </template>
 
-      <!-- Dark Mode Toggle -->
-      <button @click="dark = !dark" class="ml-4 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition">
-        <i x-show="!dark" class="fas fa-moon text-lg"></i>
-        <i x-show="dark" class="fas fa-sun text-lg text-yellow-400"></i>
-      </button>
     </div>
 
     <!-- Mobile Menu Toggle -->
@@ -100,6 +103,15 @@
   <!-- Mobile Menu -->
   <div x-show="mobileMenu" class="md:hidden bg-white/95 dark:bg-gray-800/95 glass" x-transition>
     <div class="container mx-auto px-4 py-4 space-y-3">
+
+      <!-- Dark Mode -->
+      <button @click="dark = !dark" class="flex items-center space-x-2">
+        <i x-show="!dark" class="fas fa-moon"></i>
+        <i x-show="dark" class="fas fa-sun text-yellow-400"></i>
+        <span>Toggle Theme</span>
+      </button>
+
+      <!-- Links -->
       <a href="#features" class="block">Features</a>
       <a href="#pricing" class="block">Pricing</a>
 
@@ -115,12 +127,6 @@
         <button @click="logout()" class="block text-red-600">Logout</button>
       </template>
 
-      <!-- Dark Mode -->
-      <button @click="dark = !dark" class="flex items-center space-x-2">
-        <i x-show="!dark" class="fas fa-moon"></i>
-        <i x-show="dark" class="fas fa-sun text-yellow-400"></i>
-        <span>Toggle Theme</span>
-      </button>
     </div>
   </div>
 </header>
