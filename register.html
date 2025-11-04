@@ -60,7 +60,7 @@
     document.getElementById('regForm').onsubmit = async e => {
       e.preventDefault();
       const fd = new FormData(e.target);
-      const res = await fetch('/api/auth/register', {
+      const res = await fetch('register.html', {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify(Object.fromEntries(fd))
