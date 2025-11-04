@@ -97,6 +97,9 @@
                 </td>
               </tr>
             </template>
+            <tr x-show="keys.length === 0" class="text-center text-gray-500 py-8">
+              <td colspan="4">No keys found. Check your keys.txt URL.</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -125,7 +128,7 @@
 const DISCORD_CLIENT_ID = '963238863256567848';
 const REDIRECT_URI = 'https://capovh.github.io/CapTcha/admin.html';
 const GITHUB_RAW_URL = 'https://raw.githubusercontent.com/72395839745598327589k/dsadasdasd324e3242/refs/heads/main/keys.txt';
-const ADMIN_DISCORD_IDS = ['1393017932610666577', '805954114231205978']; // Your admin Discord IDs
+const ADMIN_DISCORD_IDS = ['1393017932610666577', '805954114231205978']; // Your admin IDs
 
 // Firebase Config
 const firebaseConfig = {
@@ -169,47 +172,58 @@ function admin() {
     },
 
     async exchangeCode(code) {
-      const tokenResponse = await fetch(`https://discord.com/api/oauth2/token`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          client_id: DISCORD_CLIENT_ID,
-          client_secret: 'e-AcJZ15inxDOh7tovbhxEqYywfHb4bq',
-          grant_type: 'authorization_code',
-          code: code,
-          redirect_uri: REDIRECT_URI,
-          scope: 'identify guilds'
-        })
-      });
-      const tokenData = await tokenResponse.json();
-      if (!tokenData.access_token) return alert('Discord login failed.');
+      try {
+        const tokenResponse = await fetch(`https://discord.com/api/oauth2/token`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            client_id: DISCORD_CLIENT_ID,
+            client_secret: 'e-AcJZ15inxDOh7tovbhxEqYywfHb4bq',
+            grant_type: 'authorization_code',
+            code: code,
+            redirect_uri: REDIRECT_URI,
+            scope: 'identify guilds'
+          })
+        });
+        const tokenData = await tokenResponse.json();
+        if (!tokenData.access_token) throw new Error('Invalid Discord token');
 
-      const userResponse = await fetch('https://discord.com/api/users/@me', {
-        headers: { Authorization: `Bearer ${tokenData.access_token}` }
-      });
-      const user = await userResponse.json();
-      localStorage.setItem('discord_user', JSON.stringify(user));
+        const userResponse = await fetch('https://discord.com/api/users/@me', {
+          headers: { Authorization: `Bearer ${tokenData.access_token}` }
+        });
+        const user = await userResponse.json();
+        localStorage.setItem('discord_user', JSON.stringify(user));
 
-      if (ADMIN_DISCORD_IDS.includes(user.id)) {
-        this.user = user;
-        this.isAdmin = true;
-        await this.loadData();
-      } else {
-        alert('Access denied. Admins only.');
-        this.logout();
+        if (ADMIN_DISCORD_IDS.includes(user.id)) {
+          this.user = user;
+          this.isAdmin = true;
+          await this.loadData();
+        } else {
+          alert('Access denied. Admins only.');
+          this.logout();
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Login failed: ' + err.message);
       }
     },
 
     async loadData() {
       try {
-        // Load keys from GitHub
+        // === Load keys from GitHub ===
         const res = await fetch(GITHUB_RAW_URL);
-        if (!res.ok) throw new Error('Failed to load keys.txt');
+        if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+
         const text = await res.text();
-        const lines = text.trim().split('\n').filter(l => l.trim());
+        if (!text || typeof text !== 'string') throw new Error('Empty response from keys.txt');
+
+        const lines = text.trim().split('\n').map(l => l.trim()).filter(l => l);
+        if (lines.length === 0) throw new Error('keys.txt is empty');
 
         const githubKeys = lines.map(line => {
-          const [code, redeemedBy, discordId, expires] = line.split(',');
+          const parts = line.split(',');
+          if (parts.length < 4) return null; // Skip malformed
+          const [code, redeemedBy, discordId, expires] = parts;
           const expiryDate = new Date(expires);
           const isExpired = expiryDate < new Date();
           return {
@@ -218,9 +232,9 @@ function admin() {
             expires: expires.trim(),
             status: isExpired ? 'expired' : 'active'
           };
-        });
+        }).filter(Boolean);
 
-        // Load claimed keys from Firebase (in case of override)
+        // === Load claimed keys from Firebase ===
         const snap = await db.ref('keys').once('value');
         const claimed = snap.val() || {};
 
@@ -229,18 +243,20 @@ function admin() {
           claimedBy: k.claimedBy !== '—' ? k.claimedBy : (claimed[k.code]?.claimedBy || '—')
         }));
 
-        // Load injections
+        // === Load injections ===
         const injSnap = await db.ref('injections').once('value');
         this.injections = Object.values(injSnap.val() || {});
 
-        // Update stats
+        // === Update stats ===
         this.stats.total = this.keys.length;
         this.stats.active = this.keys.filter(k => k.status === 'active').length;
         this.stats.expired = this.stats.total - this.stats.active;
 
       } catch (err) {
-        console.error(err);
+        console.error('Load error:', err);
         alert('Failed to load data: ' + err.message);
+        this.keys = [];
+        this.stats = { total: 0, active: 0, expired: 0 };
       }
     },
 
@@ -254,10 +270,15 @@ function admin() {
       this.isAdmin = false;
       this.user = null;
       this.keys = [];
+      this.stats = { total: 0, active: 0, expired: 0 };
     },
 
     formatDate(date) {
-      return new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+      try {
+        return new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+      } catch {
+        return 'Invalid Date';
+      }
     }
   };
 }
