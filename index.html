@@ -6,7 +6,6 @@
   <title>Captcha Finder</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    /* === FULL CSS FROM YOUR ORIGINAL (LIGHT + DARK) === */
     :root { --primary: #4a6fa5; --secondary: #6c757d; --success: #28a745; --danger: #dc3545; --light: #f8f9fa; --dark: #343a40; --bg: #f5f7fa; --card-bg: white; --text: #2d3748; --border: #e2e8f0; --header-bg: rgba(255,255,255,0.95); --footer-bg: #343a40; --footer-text: #ccc; --scrollbar-track: #f1f1f1; --scrollbar-thumb: #4a6fa5; --scrollbar-thumb-hover: #3a5a8a; }
     [data-theme="dark"] { --primary: #6c9eff; --secondary: #a0aec0; --success: #48bb78; --danger: #f56565; --light: #2d3748; --dark: #f7fafc; --bg: #0f172a; --card-bg: #1e293b; --text: #e2e8f0; --border: #334155; --header-bg: rgba(15,23,42,0.95); --footer-bg: #0a0e1a; --footer-text: #94a3b8; --scrollbar-track: #1e293b; --scrollbar-thumb: #6c9eff; --scrollbar-thumb-hover: #5b8cff; }
     * { margin:0; padding:0; box-sizing:border-box; transition:background .3s,color .3s,border-color .3s; }
@@ -16,12 +15,7 @@
     .header-content { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; }
     .logo { font-size:1.8rem; font-weight:700; color:var(--primary); text-decoration:none; display:flex; align-items:center; gap:.5rem; }
     .logo i { font-size:2rem; }
-    nav ul { display:flex; list-style:none; gap:2rem; align-items:center; }
-    nav a { text-decoration:none; color:var(--text); font-weight:500; position:relative; }
-    nav a:hover { color:var(--primary); }
-    nav a::after { content:''; position:absolute; width:0; height:2px; bottom:-5px; left:0; background:var(--primary); transition:width .3s; }
-    nav a:hover::after { width:100%; }
-    .user-menu { display:flex; gap:1rem; font-weight:500; }
+    .user-menu { display:flex; gap:1rem; align-items:center; font-weight:500; }
     .user-menu a, .user-menu button { background:none; border:none; color:var(--text); cursor:pointer; text-decoration:none; }
     .user-menu .username { color:var(--primary); font-weight:600; }
     .user-menu .logout { color:var(--danger); }
@@ -32,7 +26,6 @@
     .hero { text-align:center; padding:4rem 0; background:var(--card-bg); border-radius:12px; margin-bottom:3rem; box-shadow:0 6px 20px rgba(0,0,0,.1); }
     .hero h1 { font-size:3rem; margin-bottom:1rem; background:linear-gradient(90deg,var(--primary),color-mix(in srgb,var(--primary),white 30%)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
     .hero p { font-size:1.2rem; color:var(--secondary); max-width:700px; margin:auto auto 2rem; }
-    .search-section { background:var(--card-bg); padding:2.5rem; border-radius:12px; box-shadow:0 6px 20px rgba(0,0,0,.1); margin-bottom:3rem; }
     .search-box { display:flex; gap:1rem; margin-bottom:1.5rem; flex-wrap:wrap; }
     .input-group { flex:1; min-width:300px; position:relative; }
     .input-group input { width:100%; padding:1rem 1rem 1rem 3rem; border:2px solid var(--border); border-radius:12px; font-size:1rem; background:var(--card-bg); color:var(--text); transition:all .3s; }
@@ -41,33 +34,7 @@
     .btn { padding:1rem 2rem; border:none; border-radius:12px; font-size:1rem; font-weight:600; cursor:pointer; transition:all .3s; display:inline-flex; align-items:center; gap:.5rem; text-decoration:none; }
     .btn-primary { background:var(--primary); color:white; }
     .btn-primary:hover { background:color-mix(in srgb,var(--primary),black 20%); transform:translateY(-2px); box-shadow:0 8px 25px color-mix(in srgb,var(--primary),transparent 70%); }
-    .btn-outline { background:transparent; color:var(--primary); border:2px solid var(--primary); }
-    .btn-outline:hover { background:var(--primary); color:white; }
-    .features { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:2rem; margin:3rem 0; }
-    .feature-card { background:var(--card-bg); padding:2rem; border-radius:12px; box-shadow:0 6px 20px rgba(0,0,0,.1); transition:transform .3s; text-align:center; }
-    .feature-card:hover { transform:translateY(-10px); }
-    .feature-icon { font-size:3rem; margin-bottom:1rem; color:var(--primary); }
-    .results { background:var(--card-bg); padding:2rem; border-radius:12px; box-shadow:0 6px 20px rgba(0,0,0,.1); margin-top:2rem; display:none; }
-    .result-item { padding:1rem; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
-    .result-item:last-child { border-bottom:none; }
-    .result-type { background:color-mix(in srgb,var(--primary),transparent 90%); color:var(--primary); padding:.25rem .75rem; border-radius:20px; font-size:.8rem; font-weight:600; }
-    .no-results { text-align:center; padding:3rem; color:var(--secondary); }
-    .loading { text-align:center; padding:2rem; }
-    .spinner { border:4px solid var(--border); border-top:4px solid var(--primary); border-radius:50%; width:40px; height:40px; animation:spin 1s linear infinite; margin:auto auto 1rem; }
-    @keyframes spin { 0%{transform:rotate(0)} 100%{transform:rotate(360deg)} }
-    footer { background:var(--footer-bg); color:var(--footer-text); padding:3rem 0 1rem; margin-top:3rem; }
-    .footer-content { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:2rem; margin-bottom:2rem; }
-    .footer-section h3 { margin-bottom:1rem; color:white; }
-    .footer-section ul { list-style:none; }
-    .footer-section ul li { margin-bottom:.5rem; }
-    .footer-section a { color:var(--footer-text); text-decoration:none; transition:color .3s; }
-    .footer-section a:hover { color:white; }
-    .footer-bottom { text-align:center; padding-top:2rem; border-top:1px solid color-mix(in srgb,white,transparent 90%); color:#94a3b8; font-size:.9rem; }
-    @media (max-width:768px) { .header-content{flex-direction:column;gap:1rem} nav ul{gap:1rem} .hero h1{font-size:2.2rem} .search-box{flex-direction:column} .input-group{min-width:100%} }
-    ::-webkit-scrollbar { width:8px; }
-    ::-webkit-scrollbar-track { background:var(--scrollbar-track); }
-    ::-webkit-scrollbar-thumb { background:var(--scrollbar-thumb); border-radius:4px; }
-    ::-webkit-scrollbar-thumb:hover { background:var(--scrollbar-thumb-hover); }
+    footer { background:var(--footer-bg); color:var(--footer-text); padding:3rem 0 1rem; margin-top:3rem; text-align:center; }
   </style>
 </head>
 <body>
@@ -75,9 +42,11 @@
     <div class="container">
       <div class="header-content">
         <a href="/" class="logo"><i class="fas fa-shield-alt"></i>Captcha Finder</a>
-        <nav><ul><li><a href="#home">Home</a></li><li><a href="#features">Features</a></li><li><a href="#how-it-works">How It Works</a></li><li><a href="#contact">Contact</a></li></ul></nav>
+        <div class="user-menu" id="userMenu">
+          <a href="login.html">Login</a>
+          <a href="register.html">Register</a>
+        </div>
         <div style="display:flex;gap:1rem;align-items:center;">
-          <div class="user-menu" id="userMenu"><a href="login.html">Login</a> <a href="register.html">Register</a></div>
           <div class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></div>
         </div>
       </div>
@@ -86,7 +55,7 @@
 
   <main>
     <div class="container">
-      <section class="hero" id="home">
+      <section class="hero">
         <h1>CapTcha Tool</h1>
         <p>Quickly detect and analyze CAPTCHA implementations across websites.</p>
         <div class="search-box">
@@ -94,62 +63,27 @@
           <button class="btn btn-primary" id="scanBtn"><i class="fas fa-search"></i> Scan</button>
         </div>
       </section>
-
-      <section class="search-section">
-        <h2 style="text-align:center;margin-bottom:1.5rem;">Advanced Options</h2>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem;margin-bottom:2rem;">
-          <label><input type="checkbox" checked> Scan image CAPTCHAs</label>
-          <label><input type="checkbox" checked> Detect reCAPTCHA</label>
-          <label><input type="checkbox" checked> Detect hCaptcha</label>
-          <label><input type="checkbox" checked> Find custom scripts</label>
-        </div>
-        <div style="text-align:center;"><button class="btn btn-outline" id="clearBtn"><i class="fas fa-trash"></i> Clear</button></div>
-      </section>
-
-      <section class="results" id="results"><h2 style="margin-bottom:1.5rem;">Results</h2><div id="resultsContainer"></div></section>
-
-      <section class="features" id="features">
-        <!-- (same 6 feature cards from your original) -->
-        <div class="feature-card"><div class="feature-icon"><i class="fas fa-bolt"></i></div><h3>Fast</h3><p>Scan in seconds.</p></div>
-        <div class="feature-card"><div class="feature-icon"><i class="fas fa-shield-alt"></i></div><h3>Multiple Types</h3><p>reCAPTCHA, hCaptcha, custom.</p></div>
-        <div class="feature-card"><div class="feature-icon"><i class="fas fa-code"></i></div><h3>Developer Friendly</h3><p>Detailed reports.</p></div>
-        <div class="feature-card"><div class="feature-icon"><i class="fas fa-chart-bar"></i></div><h3>Export</h3><p>JSON / CSV.</p></div>
-        <div class="feature-card"><div class="feature-icon"><i class="fas fa-lock"></i></div><h3>Privacy</h3><p>Server-side secure.</p></div>
-        <div class="feature-card"><div class="feature-icon"><i class="fas fa-mobile-alt"></i></div><h3>Responsive</h3><p>All devices.</p></div>
-      </section>
     </div>
   </main>
 
-  <footer id="contact">
-    <div class="container">
-      <div class="footer-content">
-        <div class="footer-section"><h3>Captcha Finder</h3><p>Advanced CAPTCHA detection tool.</p></div>
-        <div class="footer-section"><h3>Links</h3><ul><li><a href="#home">Home</a></li><li><a href="#features">Features</a></li></ul></div>
-        <div class="footer-section"><h3>CAPTCHAs</h3><ul><li>reCAPTCHA v2/v3</li><li>hCaptcha</li><li>Image-based</li></ul></div>
-        <div class="footer-section"><h3>Contact</h3><ul><li><a href="mailto:support@captchafinder.com">Email</a></li></ul></div>
-      </div>
-      <div class="footer-bottom"><p>© 2025 Captcha Finder. All rights reserved.</p></div>
-    </div>
-  </footer>
+  <footer>© 2025 Captcha Finder</footer>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 
   <script>
-    // Firebase Auth State
-firebase.auth().onAuthStateChanged(user => {
-  const userMenu = document.getElementById('userMenu');
-  if (user) {
-    const displayName = user.email.split('@')[0];
-    userMenu.innerHTML = `<span class="username">${displayName}</span> <button class="logout" onclick="logout()">Logout</button>`;
-    localStorage.setItem('user', JSON.stringify(user));
-  } else {
-    userMenu.innerHTML = `<a href="login.html">Login</a> <a href="register.html">Register</a>`;
-    localStorage.removeItem('user');
-    if (location.pathname.includes('dashboard.html')) location.href = '/login.html';
-  }
-});
+    const firebaseConfig = {
+      apiKey: "AIzaSyA9sJoZSzbmKJ-7F9jsYVmf7m4cMJ_JUuA",
+      authDomain: "captcha-finder.firebaseapp.com",
+      projectId: "captcha-finder",
+      storageBucket: "captcha-finder.firebasestorage.app",
+      messagingSenderId: "268327722037",
+      appId: "1:268327722037:web:54ba44e1d4ccc2c734e57c",
+      measurementId: "G-LX1WXZFJCW"
+    };
+    firebase.initializeApp(firebaseConfig);
 
-window.logout = () => {
-  firebase.auth().signOut().then(() => location.reload());
-};
     // Theme toggle
     const toggle = document.getElementById('themeToggle'), body = document.body, icon = toggle.querySelector('i');
     const theme = localStorage.getItem('theme') || 'light'; body.dataset.theme = theme;
@@ -161,53 +95,39 @@ window.logout = () => {
       icon.classList.toggle('fa-sun', !isDark); icon.classList.toggle('fa-moon', isDark);
     };
 
-    // User menu
+    // User menu + Dashboard button
     const userMenu = document.getElementById('userMenu');
-    async function updateMenu() {
-      try {
-        const r = await fetch('/api/auth/me'); const d = await r.json();
-        if (d.username) userMenu.innerHTML = `<span class="username">${d.username}</span> <button class="logout" onclick="logout()">Logout</button>`;
-        else userMenu.innerHTML = `<a href="login.html">Login</a> <a href="register.html">Register</a>`;
-      } catch { userMenu.innerHTML = `<a href="login.html">Login</a> <a href="register.html">Register</a>`; }
+    function updateUserMenu(user) {
+      if (user) {
+        const name = user.email.split('@')[0];
+        userMenu.innerHTML = `
+          <a href="dashboard.html" class="btn btn-outline" style="padding:0.5rem 1rem;font-size:0.9rem;">
+            <i class="fas fa-tachometer-alt"></i> Dashboard
+          </a>
+          <span class="username">${name}</span>
+          <button class="logout" onclick="logout()">Logout</button>
+        `;
+      } else {
+        userMenu.innerHTML = `<a href="login.html">Login</a> <a href="register.html">Register</a>`;
+      }
     }
-    window.logout = async () => { await fetch('/api/auth/logout', {method:'POST'}); updateMenu(); location.reload(); };
-    updateMenu();
 
-    // Scan
-    const urlInput = document.getElementById('urlInput'), scanBtn = document.getElementById('scanBtn'), results = document.getElementById('results'), container = document.getElementById('resultsContainer');
-    scanBtn.onclick = async () => {
-      const url = urlInput.value.trim();
-      if (!url || !/^https?:\/\//i.test(url)) return alert('Enter valid URL');
-      results.style.display = 'block';
-      container.innerHTML = `<div class="loading"><div class="spinner"></div><p>Scanning...</p></div>`;
-      const res = await fetch('/api/scan', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({url})});
-      const data = await res.json();
-      if (data.error) { container.innerHTML = `<p style="color:var(--danger)">${data.error}</p>`; return; }
-      displayResults(url, data.captchas || []);
+    window.logout = () => {
+      firebase.auth().signOut().then(() => location.reload());
     };
 
-    function displayResults(url, captchas) {
-      if (!captchas.length) return container.innerHTML = `<div class="no-results"><h3>No CAPTCHAs Found</h3><p>On <strong>${url}</strong></p></div>`;
-      let html = `<div style="margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--border);"><h3 style="color:var(--success)">${captchas.length} Found</h3><p>Scanned: <strong>${url}</strong></p></div>`;
-      captchas.forEach(c => {
-        const col = c.type.includes('RECAPTCHA') ? '#4285f4' : c.type.includes('HCAPTCHA') ? '#344e86' : '#f39c12';
-        html += `<div class="result-item"><div><strong>${c.type}</strong></div><div class="result-type" style="background:${col}20;color:${col}">${c.confidence}%</div></div>`;
-      });
-      html += `<div style="margin-top:2rem;text-align:center;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
-        <button class="btn btn-outline" onclick="exportJSON('${url}',${JSON.stringify(captchas)})">JSON</button>
-        <button class="btn btn-outline" onclick="exportCSV('${url}',${JSON.stringify(captchas)})">CSV</button>
-        <button class="btn btn-primary" onclick="copyResults(${JSON.stringify(captchas)})">Copy</button>
-      </div>`;
-      container.innerHTML = html;
-    }
+    // Check auth state
+    firebase.auth().onAuthStateChanged(user => {
+      updateUserMenu(user);
+      localStorage.setItem('user', user ? JSON.stringify(user) : '');
+    });
 
-    window.exportJSON = (url, data) => { data = JSON.parse(data); download(JSON.stringify({url, captchas:data, timestamp:new Date().toISOString()},null,2), 'results.json', 'application/json'); };
-    window.exportCSV = (url, data) => { data = JSON.parse(data); let csv = 'Type,Confidence,URL,Timestamp\n'; data.forEach(c=>csv+=`"${c.type}","${c.confidence}%","${url}","${new Date().toISOString()}"\n`); download(csv, 'results.csv', 'text/csv'); };
-    window.copyResults = data => { data = JSON.parse(data); navigator.clipboard.writeText(data.map(c=>`${c.type} (${c.confidence}%)`).join('\n')).then(()=>alert('Copied!')); };
-    function download(content, name, type) { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([content],{type})); a.download = name; a.click(); }
-
-    document.getElementById('clearBtn').onclick = () => { results.style.display='none'; container.innerHTML=''; urlInput.value=''; };
-    document.querySelectorAll('a[href^="#"]').forEach(a=>a.onclick=e=>{e.preventDefault(); document.querySelector(a.getAttribute('href')).scrollIntoView({behavior:'smooth'});});
+    // Scan logic (placeholder)
+    document.getElementById('scanBtn').onclick = () => {
+      const url = document.getElementById('urlInput').value;
+      if (!url) return alert('Enter a URL');
+      alert(`Scanning ${url}... (backend not connected yet)`);
+    };
   </script>
 </body>
 </html>
