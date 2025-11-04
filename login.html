@@ -1,160 +1,135 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en-US" dir="ltr" data-navigation-type="default" data-navbar-horizontal-shape="default">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login – CapTcha Tool</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Inter', sans-serif; }
-  </style>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Login – CrackV</title>
+
+  <!-- Favicon -->
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/img/icons/logo.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/img/icons/logo.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/img/icons/logo.png">
+  <link rel="shortcut icon" type="image/x-icon" href="assets/img/icons/logo.png">
+  <link rel="manifest" href="assets/img/favicons/manifest.json">
+  <meta name="msapplication-TileImage" content="assets/img/icons/logo.png">
+  <meta name="theme-color" content="#ffffff">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Vendors -->
+  <link href="vendors/simplebar/simplebar.min.css" rel="stylesheet">
+  <link href="https://unicons.iconscout.com/release/v4.0.8/css/line.css" rel="stylesheet">
+
+  <!-- Theme CSS -->
+  <link href="assets/css/theme.min.css" rel="stylesheet" id="style-default">
+  <link href="assets/css/user.min.css" rel="stylesheet" id="user-style-default">
+
+  <!-- Leaflet (if needed later) -->
+  <link href="vendors/leaflet/leaflet.css" rel="stylesheet">
+  <link href="vendors/leaflet.markercluster/MarkerCluster.css" rel="stylesheet">
+  <link href="vendors/leaflet.markercluster/MarkerCluster.Default.css" rel="stylesheet">
 </head>
-<body class="bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900 min-h-screen flex items-center justify-center p-4" x-data="loginApp()">
+<body>
 
-<div class="w-full max-w-md">
-  <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-white/20">
-    <div class="text-center mb-8">
-      <img src="assets/logo.svg" alt="CapTcha Tool" class="w-16 h-16 mx-auto mb-4">
-      <h1 class="text-3xl font-bold">Welcome Back</h1>
-      <p class="text-gray-600 dark:text-gray-400 mt-2">Log in to your account</p>
+<main class="main" id="top">
+  <div class="container-fluid bg-body-tertiary dark__bg-gray-1200">
+    <div class="bg-holder bg-auth-card-overlay" style="background-image:url(assets/img/bg/37.png);"></div>
+
+    <div class="row flex-center position-relative min-vh-100 g-0 py-5">
+      <div class="col-11 col-sm-10 col-xl-8">
+        <div class="card border border-translucent auth-card">
+
+          <div class="card-body pe-md-0">
+            <div class="row align-items-center gx-0 gy-7">
+
+              <!-- Left Side: Info Box -->
+              <div class="col-auto bg-body-highlight dark__bg-gray-1100 rounded-3 position-relative overflow-hidden auth-title-box">
+                <div class="bg-holder" style="background-image:url(assets/img/bg/38.png);"></div>
+
+                <div class="position-relative px-4 px-lg-7 pt-7 pb-7 pb-sm-5 text-center text-md-start pb-lg-7">
+                  <h3 class="mb-3 text-body-emphasis fs-7">CrackV Authentication</h3>
+                  <p class="text-body-tertiary">
+                    Login with the easy built-in Discord authentication to access your personal dashboard!
+                  </p>
+                  <ul class="list-unstyled mb-0 w-max-content w-md-auto">
+                    <li class="d-flex align-items-center">
+                      <span class="uil uil-check-circle text-success me-2"></span>
+                      <span class="text-body-tertiary fw-semibold">Fast</span>
+                    </li>
+                    <li class="d-flex align-items-center">
+                      <span class="uil uil-check-circle text-success me-2"></span>
+                      <span class="text-body-tertiary fw-semibold">Simple</span>
+                    </li>
+                    <li class="d-flex align-items-center">
+                      <span class="uil uil-check-circle text-success me-2"></span>
+                      <span class="text-body-tertiary fw-semibold">Responsive</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="position-relative z-n1 mb-6 d-none d-md-block text-center mt-md-15">
+                  <img class="auth-title-box-img d-dark-none" src="assets/img/spot-illustrations/auth.png" alt="">
+                  <img class="auth-title-box-img d-light-none" src="assets/img/spot-illustrations/auth-dark.png" alt="">
+                </div>
+              </div>
+
+              <!-- Right Side: Login Form -->
+              <div class="col mx-auto">
+                <div class="auth-form-box">
+                  <div class="text-center mb-6 mx-auto">
+                    <img class="mb-7 d-dark-none" src="assets/img/spot-illustrations/1.png" alt="phoenix" width="120">
+                    <img class="mb-7 d-light-none" src="assets/img/spot-illustrations/dark_1.png" alt="phoenix" width="120">
+
+                    <div class="mb-6">
+                      <h4 class="text-body-highlight">Welcome Back!</h4>
+                      <p class="text-body-tertiary">
+                        Thanks for using CrackV.<br class="d-lg-none">
+                        You can now login to <br class="d-sm-none">your dashboard.
+                      </p>
+                    </div>
+
+                    <div class="d-grid">
+                      <a class="btn btn-primary d-flex align-items-center justify-content-center" href="https://discord.com/oauth2/authorize?client_id=1405364198350786661&redirect_uri=https%3A%2F%2Fcrackv.com%2Fauth%2Fdiscord%2Fcallback&response_type=code&scope=identify%20guilds&state=eb8a99f38ea632216b8bef1b7ca9cdef85e934cbb6578b83">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#5865F2" class="me-2" viewBox="0 0 127.14 96.36">
+                          <path d="M107.7 8.07A105.15 105.15 0 0 0 81.47 0a72.06 72.06 0 0 0-3.36 6.83 97.68 97.68 0 0 0-29.11 0A72.37 72.37 0 0 0 45.64 0a105.89 105.89 0 0 0-26.25 8.09C2.79 32.65-1.71 56.6.54 80.21a113.9 113.9 0 0 0 34.13 16.73 77.7 77.7 0 0 0 6.78-10.91 68.62 68.62 0 0 1-10.5-5.11c-.91-.66-.61-1.8.45-1.29 31.31 14.15 64.98 14.15 96.18 0 .94-.49 1.24.56.45 1.29a68.62 68.62 0 0 1-10.5 5.11 77.7 77.7 0 0 0 6.78 10.91 113.9 113.9 0 0 0 34.13-16.73c2.25-23.61-2.25-47.56-18.87-72.14zM42.45 65.69C38.48 65.69 35 62.06 35 57.73s3.48-7.96 7.45-7.96 7.45 3.6 7.45 7.96-3.48 7.96-7.45 7.96zm42.24 0c-3.97 0-7.45-3.6-7.45-7.96s3.48-7.96 7.45-7.96 7.45 3.6 7.45 7.96-3.48 7.96-7.45 7.96z"/>
+                        </svg>
+                        Sign In with Discord
+                        <span class="fas fa-angle-right ms-2"></span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-
-    <form @submit.prevent="login">
-      <div class="mb-5">
-        <label class="block text-sm font-medium mb-2">Email</label>
-        <input 
-          type="email" 
-          x-model="email" 
-          required 
-          class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition" 
-          placeholder="you@example.com"
-          :disabled="loading"
-        >
-      </div>
-      <div class="mb-6">
-        <label class="block text-sm font-medium mb-2">Password</label>
-        <input 
-          type="password" 
-          x-model="password" 
-          required 
-          class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition" 
-          placeholder="••••••••"
-          :disabled="loading"
-        >
-      </div>
-
-      <button 
-        type="submit" 
-        :disabled="loading" 
-        class="w-full py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold rounded-lg hover:shadow-lg transition disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center"
-      >
-        <span x-show="!loading">Login</span>
-        <svg x-show="loading" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-      </button>
-    </form>
-
-    <p class="text-center mt-6 text-sm text-gray-600 dark:text-gray-400">
-      Don't have an account? <a href="register.html" class="text-indigo-600 font-medium hover:underline">Register</a>
-    </p>
   </div>
+</main>
 
-  <!-- Toast Notification -->
-  <div 
-    x-show="toast.show" 
-    x-transition:enter="transition ease-out duration-300"
-    x-transition:enter-start="opacity-0 transform translate-y-2"
-    x-transition:enter-end="opacity-100 transform translate-y-0"
-    x-transition:leave="transition ease-in duration-200"
-    x-transition:leave-start="opacity-100"
-    x-transition:leave-end="opacity-0"
-    class="fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-lg flex items-center space-x-2 text-white"
-    :class="toast.type === 'success' ? 'bg-green-600' : 'bg-red-600'"
-  >
-    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-        :d="toast.type === 'success' ? 'M5 13l4 4L19 7' : 'M6 18L18 6M6 6l12 12'"/>
-    </svg>
-    <span x-text="toast.message"></span>
-  </div>
-</div>
+<!-- Scripts -->
+<script src="vendors/popper/popper.min.js"></script>
+<script src="vendors/bootstrap/bootstrap.min.js"></script>
+<script src="vendors/anchorjs/anchor.min.js"></script>
+<script src="vendors/is/is.min.js"></script>
+<script src="vendors/fontawesome/all.min.js"></script>
+<script src="vendors/lodash/lodash.min.js"></script>
+<script src="vendors/list.js/list.min.js"></script>
+<script src="vendors/feather-icons/feather.min.js"></script>
+<script src="vendors/dayjs/dayjs.min.js"></script>
+<script src="vendors/leaflet/leaflet.js"></script>
+<script src="vendors/leaflet.markercluster/leaflet.markercluster.js"></script>
+<script src="vendors/leaflet.tilelayer.colorfilter/leaflet-tilelayer-colorfilter.min.js"></script>
+<script src="assets/js/phoenix.js"></script>
+<script src="vendors/echarts/echarts.min.js"></script>
+<script src="https://sellauth.com/assets/js/sellauth-embed-2.js"></script>
 
-<!-- Firebase SDK -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyA9sJoZSzbmKJ-7F9jsYVmf7m4cMJ_JUuA",
-    authDomain: "captcha-finder.firebaseapp.com",
-    projectId: "captcha-finder",
-    storageBucket: "captcha-finder.firebasestorage.app",
-    messagingSenderId: "268327722037",
-    appId: "1:268327722037:web:54ba44e1d4ccc2c734e57c",
-    measurementId: "G-LX1WXZFJCW"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-
-  function loginApp() {
-    return {
-      email: '',
-      password: '',
-      loading: false,
-      toast: { show: false, message: '', type: 'success' },
-
-      showToast(message, type = 'success') {
-        this.toast = { show: true, message, type };
-        setTimeout(() => this.toast.show = false, 4000);
-      },
-
-      async login() {
-        if (!this.email || !this.password) {
-          this.showToast('Please fill in all fields', 'error');
-          return;
-        }
-
-        this.loading = true;
-
-        try {
-          const userCredential = await signInWithEmailAndPassword(auth, this.email, this.password);
-          console.log('Logged in:', userCredential.user);
-
-          this.showToast('Login successful! Redirecting...');
-          setTimeout(() => {
-            window.location.href = 'dashboard.html';
-          }, 1500);
-
-        } catch (error) {
-          console.error('Login error:', error);
-          let message = 'Login failed. Please try again.';
-          
-          if (error.code === 'auth/user-not-found') {
-            message = 'No account found with this email.';
-          } else if (error.code === 'auth/wrong-password') {
-            message = 'Incorrect password.';
-          } else if (error.code === 'auth/invalid-email') {
-            message = 'Invalid email address.';
-          } else if (error.code === 'auth/too-many-requests') {
-            message = 'Too many attempts. Try again later.';
-          }
-
-          this.showToast(message, 'error');
-        } finally {
-          this.loading = false;
-        }
-      }
-    }
-  }
-
-  // Make loginApp globally available for Alpine
-  window.loginApp = loginApp;
-</script>
 </body>
 </html>
