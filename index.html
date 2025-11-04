@@ -56,7 +56,7 @@
 <header class="fixed top-0 w-full z-50 glass border-b border-white/10">
   <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
     <a href="/" class="flex items-center space-x-2">
-      <img src="assets/logo.svg" alt="CapTcha Tool" class="w-10 h-10">
+      <div class="w-10 h-10 gradient-bg rounded-lg flex items-center justify-center text-white font-bold">CT</div>
       <span class="text-xl font-bold">CapTcha Tool</span>
     </a>
     <div class="hidden md:flex items-center space-x-6">
@@ -114,17 +114,23 @@
     <h2 class="text-4xl font-bold text-center mb-12">Why Choose CapTcha Tool?</h2>
     <div class="grid md:grid-cols-3 gap-8">
       <div class="float-card text-center p-6 rounded-2xl glass hover:shadow-xl transition">
-        <div class="w-16 h-16 mx-auto mb-4 gradient-bg rounded-xl flex items-center justify-center text-white text-2xl">Lightning</div>
+        <div class="w-16 h-16 mx-auto mb-4 gradient-bg rounded-xl flex items-center justify-center text-white text-2xl">
+          <i class="fas fa-bolt"></i>
+        </div>
         <h3 class="text-xl font-semibold mb-2">Lightning Fast</h3>
         <p class="text-gray-600 dark:text-gray-300">Average solve time: <strong>1.2s</strong></p>
       </div>
       <div class="float-card text-center p-6 rounded-2xl glass hover:shadow-xl transition">
-        <div class="w-16 h-16 mx-auto mb-4 gradient-bg rounded-xl flex items-center justify-center text-white text-2xl">Target</div>
+        <div class="w-16 h-16 mx-auto mb-4 gradient-bg rounded-xl flex items-center justify-center text-white text-2xl">
+          <i class="fas fa-bullseye"></i>
+        </div>
         <h3 class="text-xl font-semibold mb-2">99.9% Accuracy</h3>
         <p class="text-gray-600 dark:text-gray-300">AI trained on millions of captchas</p>
       </div>
       <div class="float-card text-center p-6 rounded-2xl glass hover:shadow-xl transition">
-        <div class="w-16 h-16 mx-auto mb-4 gradient-bg rounded-xl flex items-center justify-center text-white text-2xl">Lock</div>
+        <div class="w-16 h-16 mx-auto mb-4 gradient-bg rounded-xl flex items-center justify-center text-white text-2xl">
+          <i class="fas fa-shield-alt"></i>
+        </div>
         <h3 class="text-xl font-semibold mb-2">Undetectable</h3>
         <p class="text-gray-600 dark:text-gray-300">No fingerprints, no bans</p>
       </div>
@@ -236,6 +242,7 @@
         if (localStorage.getItem('dark') === null && window.matchMedia('(prefers-color-scheme: dark)').matches) {
           this.dark = true;
         }
+        document.documentElement.classList.toggle('dark', this.dark);
       }
     };
   }
@@ -258,6 +265,7 @@
       });
     } catch (err) {
       console.error(err);
+      alert('Checkout error. Please try again.');
     }
     setTimeout(() => {
       button.textContent = originalText;
