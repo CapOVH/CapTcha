@@ -134,17 +134,17 @@
 <script>
 // === CONFIG ===
 const DISCORD_CLIENT_ID = '963238863256567848';
-const REDIRECT_URI = 'https://capovh.github.io/CapTcha/admin.html'; // MUST MATCH EXACTLY
+const REDIRECT_URI = 'https://capovh.github.io/CapTcha/admin.html';
 
-// === YOUR GITHUB REPO (FIXED) ===
+// === CORS.lol + GitHub API ===
+const CORS_PROXY = 'https://api.cors.lol/?url=';
 const GITHUB_TOKEN = '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';
-const GITHUB_USER = '2395839745598327589k';           // ← USERNAME ONLY
-const GITHUB_REPO = 'dsadasdasd324e3242';             // ← REPO NAME ONLY
-const GITHUB_BRANCH = 'main';
+const GITHUB_USER = '72395839745598327589k';
+const GITHUB_REPO = 'dsadasdasd324e3242';
 const GITHUB_PATH = 'keys.txt';
 
-// CORRECT RAW URL
-const GITHUB_RAW_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${GITHUB_PATH}?token=${GITHUB_TOKEN}`;
+// FINAL URL
+const GITHUB_API_URL = CORS_PROXY + encodeURIComponent(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${GITHUB_PATH}`);
 
 const ADMIN_DISCORD_IDS = ['1393017932610666577', '805954114231205978'];
 
@@ -202,12 +202,11 @@ function admin() {
           client_secret: 'e-AcJZ15inxDOh7tovbhxEqYywfHb4bq',
           grant_type: 'authorization_code',
           code,
-          redirect_uri: REDIRECT_URI,
-          scope: 'identify'  // ← REQUIRED
+          redirect_uri: REDIRECT_URI
         })
       });
       const data = await res.json();
-      if (!data.access_token) throw new Error('Invalid or expired code');
+      if (!data.access_token) throw new Error('Invalid code');
 
       const userRes = await fetch('https://discord.com/api/users/@me', {
         headers: { Authorization: `Bearer ${data.access_token}` }
@@ -215,7 +214,7 @@ function admin() {
       const user = await userRes.json();
       localStorage.setItem('discord_user', JSON.stringify(user));
 
-      if (!ADMIN_DISCORD_IDS.includes(user.id)) throw new Error('Not an admin');
+      if (!ADMIN_DISCORD_IDS.includes(user.id)) throw new Error('Not admin');
       this.user = user;
       this.isAdmin = true;
       await this.loadData();
@@ -224,13 +223,19 @@ function admin() {
     async loadData() {
       this.loading = true;
       try {
-        const res = await fetch(GITHUB_RAW_URL, { cache: 'no-store' });
-        if (!res.ok) {
-          const msg = await res.text();
-          throw new Error(`HTTP ${res.status}: ${msg.substring(0, 100)}`);
-        }
+        // Fetch with token in headers via CORS.lol
+        const res = await fetch(GITHUB_API_URL, {
+          headers: {
+            'Authorization': `token ${GITHUB_TOKEN}`,
+            'Accept': 'application/vnd.github.v3+json'
+          }
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-        const text = await res.text();
+        const apiData = await res.json();
+        if (!apiData.content) throw new Error('No content in file');
+
+        const text = atob(apiData.content); // Base64 decode
         const lines = text.trim().split('\n').filter(l => l);
         this.keys = lines.map(line => {
           const [code, plan, expires, claimedBy = '—'] = line.split('|');
@@ -256,8 +261,7 @@ function admin() {
     },
 
     loginWithDiscord() {
-      const authUrl = `https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify`;
-      window.location = authUrl;
+      window.location = `https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify`;
     },
 
     logout() {
