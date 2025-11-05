@@ -9,8 +9,8 @@
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen relative">
 
-<!-- FORCE LOGOUT BUTTON — ALWAYS ON TOP -->
-<div class="absolute top-4 right-4 z-50">
+<!-- CONDITIONAL FORCE LOGOUT: Only shows during loading, auto-hides after 3s -->
+<div x-show="loading && showForceLogout" class="absolute top-4 right-4 z-50">
   <button @click="forceLogout()" 
           class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-medium shadow-lg transition">
     Force Logout
@@ -20,7 +20,7 @@
 <!-- LOADING -->
 <div x-show="loading" class="flex flex-col items-center justify-center min-h-screen p-6">
   <div class="text-xl animate-pulse mb-2">Loading keys...</div>
-  <div class="text-sm text-gray-500">If stuck, use Force Logout above.</div>
+  <div class="text-sm text-gray-500">If stuck, use Force Logout (auto-hides in 3s).</div>
 </div>
 
 <!-- NOT ADMIN -->
@@ -79,7 +79,7 @@
       <!-- Table -->
       <div class="bg-gray-800 rounded-xl overflow-hidden">
         <div class="p-4 border-b border-gray-700">
-          <input x-model="search" type="text" placeholder="Search key or user..." 
+          <input x-model="search" type="text" placeholder="Search key or user..."
                  class="w-full sm:w-64 px-4 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
         </div>
         <table class="w-full text-sm">
@@ -148,9 +148,20 @@ function admin() {
     keys: [],
     activeTab: 'keys',
     search: '',
+    showForceLogout: false,
+    forceLogoutTimer: null,
 
     async init() {
+      // Only run if on correct page
+      if (!window.location.pathname.includes('admin.html')) return;
+
       this.loading = true;
+      this.showForceLogout = false;
+
+      // Show Force Logout after 3s if still loading
+      this.forceLogoutTimer = setTimeout(() => {
+        if (this.loading) this.showForceLogout = true;
+      }, 3000);
 
       try {
         const saved = localStorage.getItem('discord_user');
@@ -170,6 +181,8 @@ function admin() {
       } catch (err) {
         alert('Login failed: ' + err.message);
       } finally {
+        clearTimeout(this.forceLogoutTimer);
+        this.showForceLogout = false;
         this.loading = false;
       }
     },
@@ -233,7 +246,7 @@ function admin() {
       const s = this.search.toLowerCase();
       return this.keys.filter(k =>
         k.code.toLowerCase().includes(s) ||
-        k.claimedBy.toLowerCase().includes(s)
+        (k.claimedBy && k.claimedBy.toLowerCase().includes(s))
       );
     },
 
