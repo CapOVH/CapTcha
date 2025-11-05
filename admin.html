@@ -132,18 +132,18 @@
 </template>
 
 <script>
-// === UPDATE THESE VALUES ===
+// === CONFIG ===
 const DISCORD_CLIENT_ID = '963238863256567848';
-const REDIRECT_URI = 'https://capovh.github.io/CapTcha/admin.html';
+const REDIRECT_URI = 'https://capovh.github.io/CapTcha/admin.html'; // MUST MATCH EXACTLY
 
-// === YOUR REAL GITHUB REPO ===
-const GITHUB_TOKEN = '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';  // ← YOUR REAL TOKEN
-const GITHUB_USER = '2395839745598327589k';  // ← YOUR GITHUB USERNAME
-const GITHUB_REPO = '2395839745598327589k/dsadasdasd324e3242';  // ← YOUR REAL REPO NAME
+// === YOUR GITHUB REPO (FIXED) ===
+const GITHUB_TOKEN = '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';
+const GITHUB_USER = '2395839745598327589k';           // ← USERNAME ONLY
+const GITHUB_REPO = 'dsadasdasd324e3242';             // ← REPO NAME ONLY
 const GITHUB_BRANCH = 'main';
 const GITHUB_PATH = 'keys.txt';
 
-// FINAL URL (WORKS 100%)
+// CORRECT RAW URL
 const GITHUB_RAW_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${GITHUB_PATH}?token=${GITHUB_TOKEN}`;
 
 const ADMIN_DISCORD_IDS = ['1393017932610666577', '805954114231205978'];
@@ -202,11 +202,12 @@ function admin() {
           client_secret: 'e-AcJZ15inxDOh7tovbhxEqYywfHb4bq',
           grant_type: 'authorization_code',
           code,
-          redirect_uri: REDIRECT_URI
+          redirect_uri: REDIRECT_URI,
+          scope: 'identify'  // ← REQUIRED
         })
       });
       const data = await res.json();
-      if (!data.access_token) throw new Error('Invalid code');
+      if (!data.access_token) throw new Error('Invalid or expired code');
 
       const userRes = await fetch('https://discord.com/api/users/@me', {
         headers: { Authorization: `Bearer ${data.access_token}` }
@@ -214,7 +215,7 @@ function admin() {
       const user = await userRes.json();
       localStorage.setItem('discord_user', JSON.stringify(user));
 
-      if (!ADMIN_DISCORD_IDS.includes(user.id)) throw new Error('Not admin');
+      if (!ADMIN_DISCORD_IDS.includes(user.id)) throw new Error('Not an admin');
       this.user = user;
       this.isAdmin = true;
       await this.loadData();
@@ -255,7 +256,8 @@ function admin() {
     },
 
     loginWithDiscord() {
-      window.location = `https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify`;
+      const authUrl = `https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify`;
+      window.location = authUrl;
     },
 
     logout() {
